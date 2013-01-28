@@ -2,8 +2,9 @@ PrashFour
 =========
 
 TA: Furkan
-========
+
 Initial Project Outline
+=======================
 
 Name: Web IRC
 
