@@ -17,8 +17,24 @@ storing text logs and returning them to the user upon re-entry to the chatroom, 
 
 Technologies used (but not limited to):
  node-irc
- MongoDB
+ MongoDB (Mongoose?)
  jQuery UI
+ jQuery
+ Express
+ Jade
+ Socket.io
+ 
+ 
+Milestones
+==========
 
-The first milestone will be to have a functional client side user interface and a basic server to process a low amount
-of users sending messages and the server returning those messages to the other users.
+1. Determining the design for connecting node-irc with a simple front end client. (Sockets between Client/Server)
+2. Artchitecture diagram and external library/program use
+2. Implementing an almost barebones connection between node-irc and client (no design, one page, no security)
+3. Elaborate on the user interface
+4. Integrate the logging functionality (server side storing per user per channel)
+5. Working prototype (all functionality implemented at a basic level)
+6. Improve the design, optimize functionality
+7. Draft documentation
+8. Finishing touches (additional functionality, based on available time)
+9. Final code and documentation
