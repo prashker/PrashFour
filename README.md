@@ -30,11 +30,10 @@ Milestones
 
 1. Determining the design for connecting node-irc with a simple front end client. (Sockets between Client/Server)
 2. Artchitecture diagram and external library/program use
-2. Implementing an almost barebones connection between node-irc and client (no design, one page, no security)
-3. Elaborate on the user interface
-4. Integrate the logging functionality (server side storing per user per channel)
-5. Working prototype (all functionality implemented at a basic level)
-6. Improve the design, optimize functionality
-7. Draft documentation
-8. Finishing touches (additional functionality, based on available time)
-9. Final code and documentation
+3. Implementing an almost barebones connection between node-irc and client (no design, one page, no security)
+4. Elaborate on the user interface
+5. Integrate the logging functionality (server side storing per user per channel)
+6. Working prototype (all functionality implemented at a basic level)
+7. Improve the design, optimize functionality
+8. Draft documentation
+9. Finishing touches (additional functionality, based on available time) + Final Code
