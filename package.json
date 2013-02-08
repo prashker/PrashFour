@@ -1,14 +1,12 @@
 {
-  "name": "PrashFour",
-  "description": "WEB-IRC GOODNESS",
+  "name": "application-name",
   "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app"
+  },
   "dependencies": {
-    "express": "",
-    "mongodb": "",
-    "mongoose": "",
-	"socket.io": "",
-	"jade": "",
-	"stylus": "",
-	"irc": ""
+    "express": "3.0.6",
+    "jade": "*"
   }
 }
