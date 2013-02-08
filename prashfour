@@ -1,0 +1,5 @@
+var PrashFour = require('./lib/PrashFour').PrashFour;
+
+var pf = new PrashFour();
+
+pf.start();
