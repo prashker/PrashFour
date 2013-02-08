@@ -1,0 +1,21 @@
+We have started creating our required libraries being used, which we believe are (at the very least)
+
+irc
+mongoose
+socket.io
+
+On the client side we will most likely use some combination of Bootstrap or jQuery UI or some other thing that'll incorporate nicely with Jade
+
+Still debating stylus as in our group we've either done no CSS, or just normal CSS. So we'd rather work with that so we know how to code actual CSS for situations outside of the class that stylus styled CSS cannot be used.
+
+--
+
+We have also gotten a simple "Hello World" setup using express and a simple serve of index.jade. It simply demonstrates that we got one portion of the project done.
+
+There will not be that many jade files we don't think. As most of the communicaiton between server and client is via sockets, most of the adjustment of the display will be done on the client end (asynncronously using socket.io).
+
+--
+
+For Milestone2, we will work on finalizing exactly which tech we will start to work with (for example, mongodb directly or mongoose), figure out how those technologies work, and draft up a simple Architechture Diagram re-iterating what we've mentioned here.
+
+To Start our Hello World: "node prashfour"
