@@ -2,6 +2,7 @@ PrashFour
 =========
 
 TA: Furkan
+Project Members: Samuel Prashker && Christopher Dufour
 
 Initial Project Outline
 =======================
