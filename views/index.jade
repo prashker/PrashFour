@@ -2,5 +2,16 @@ extends layout
 
 block content
     h1 PrashFour - Start
+
+    script(src='/libs/bootstrap/js/bootstrap.min.js')
+    
     #container
-        p There is nothing, yet.
+        .row.chatArea
+            #chatWindow.span9
+                .message this is a message that would appear in the chat window
+                    p also a message
+            #userList.span3
+                .user SonicSam
+                .user JoeShemoe
+        .row
+            input#messagebox.span12(name="messagebox")
