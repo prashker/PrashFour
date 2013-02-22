@@ -7,6 +7,7 @@
     "mongodb": "",
     "mongoose": "",
 	"socket.io": "",
+    "connect-assets": "",
 	"jade": "",
 	"stylus": "",
 	"irc": ""
