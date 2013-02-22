@@ -1,0 +1,61 @@
+Been working on this all reading week. I have gotten something basic working.
+
+To Run (from the Root folder)
+npm install
+node prashfour
+
+http://localhost:3000
+https://github.com/CarletonU-COMP2406-W2013/PrashFour/issues/12
+
+NOTE: node-irc throws it's own errors for unhandled things, it's to be ignored because we're not coding every handling thing for every IRCd that exists
+
+Functionality Worked on:
+    Socket.io Communication Between Server/Client
+        PING/PONG implemented, so we can measure latency to server (currently just logs to client console)
+    Communication between Server and node-irc (Specifically)
+        Client Side Commands:
+            /join (joins a channel)
+            /part (parts a channel)
+            /nick (changes nick)
+            /topic (changes topic - assuming right permissions)
+            /me (* action)
+            /query (private conversation opener with a user) -- Will eventually be triggered by clicking nick
+            
+        What Server Broadcasts / What Client Can Handle Appropriately:
+            Being "noticed" (windowless PM)
+            MOTD of the Server
+            Messages (primary thing, messages in chat room)
+            PM (private chat)
+            Join/Part events
+            Quit Events (someone else closed their client)
+            NAMES (used to get list of people in channel)
+            TOPIC (gets the topic for a channel)
+    Design Hooks
+        Inputs fields and HTML elemnts have classes and ID's that can be hooked on via templating systems and can have CSS added to individual elements
+          
+    IRCSocketConnect.js
+        Creates a node-irc instance, attaches it to a specific socket, and then sends it the events that are currently coded (see above)
+    SocketHandler.js
+        Handles the socket between client and server, is responsible for sending to client IRC messages from server, and also getting messages from the client to the IRC server
+
+    
+      
+Functionality Not Yet Implemented:
+    Design (Big one, but not yet, just this took me all week...)
+        User List:
+            <nick> <Private Message Button> <etc>
+    Hint-Box (Will have clickable buttons to auto-insert commands into the chat-box)
+        Additionally, add a "listAllCommands()" to irc.commands that can auto-populate the hint-box.
+    DATABASE BACKEND
+        User accounts
+        Persistent IRC connection (can be done natively with node-irc)
+        Saving logs for chats when logged in
+        When re-joining a room, retrieve old logs
+        Have not done the "Schema" for Mongo yet.
+    Etc's
+        TBD
+    
+
+        
+BUGS:
+    lots. Chris will report what he can.

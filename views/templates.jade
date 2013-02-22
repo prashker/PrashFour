@@ -1,0 +1,188 @@
+script(id="main_application", type="text/x-underscore-template")
+    .sidebar
+        h2 PrashFour
+        #user-box
+        #channels
+        #hint-box.text-center
+            h4 Hint-Box 
+    .content
+    
+script(id="load_image", type="text/x-underscore-template")
+    i.icon-spinner.icon-spin.icon-3x
+
+script(id="mainview_home", type="text/x-underscore-template")
+    ul
+        li.mainview_button#connection
+            i.icon-off
+            span New Connection
+        li.mainview_button#settings
+            i.icon-cogs
+            span Settings
+
+script(id="mainview_main", type="text/x-underscore-template")
+    #mainview.text-center
+
+script(id="mainview_connection", type="text/x-underscore-template")
+    #home_parent
+        a.mainview_button#home Home
+    form.form-horizontal
+        .control-group
+            .input-prepend
+                span.add-on
+                    i.icon-user
+                input#connect-nick(type="text", placeholder="Nick")
+        .control-group
+            .input-prepend
+                span.add-on
+                    i.icon-sitemap
+                input#connect-server(type="text", placeholder="Server")
+        .control-group
+            .input-prepend
+                span.add-on
+                    i.icon-key
+                input#connect-password(type="password", placeholder="Password (optional)")
+        .control-group
+            .input-prepend
+                span.add-on
+                    i.icon-barcode
+                input#connect-realName(type="text", placeholder="Real Name")
+        .connect-more-options.hide
+            .control-group
+                .input-prepend
+                    span.add-on
+                        i.icon-rss Port
+                    input#connect-port.small(type="text", placeholder="6667")
+            .control-group
+                .input-prepend
+                    span.add-on
+                        i.icon-lock SSL
+                    input#connect-secure(type="checkbox")
+            .control-group
+                .input-prepend
+                    span.add-on
+                        i.icon-lock Self-signed SSL Cert
+                    input#connect-self(type="checkbox")
+            .control-group
+                .input-prepend
+                    span.add-on
+                        i.icon-reply Rejoin on Kick
+                    input#connect-rejoin(type="checkbox")
+            .control-group
+                .input-prepend
+                    span.add-on
+                        i.icon-book
+                    select#connect-encoding Encoding
+                        option(value="", selected="selected") UTF-8
+                        option(disabled="disabled") --------------
+                        option(value="ISO-8859-1") ISO-8859-1
+                        option(value="ISO-8859-15") ISO-8859-15
+                        option(value="ISO-8859-2") ISO-8859-2
+                        option(value="ISO-8859-7") ISO-8859-7 (Greek)
+                        option(value="ISO-8859-8") ISO-8859-8 (Hebrew)
+                        option(value="ISO-8859-9") ISO-8859-9 (Turkish)
+                        option(value="ISO-8859-11") ISO-8859-11 (Thai)
+                        option(disabled="disabled") --------------
+                        option(value="ISO-2022-JP") ISO-2022-JP (Japanese)
+                        option(value="CP949") CP949 (Korean)
+                        option(value="EUC-KR") EUC-KR (Korean)
+                        option(value="GBK") GBK (Chinese)
+                        option(value="GB18030") GB18030 (Chinese)
+                        option(value="BIG5") BIG5 (Chinese)
+                        option(disabled="disabled") --------------
+                        option(value="KOI8-U") KOI8-U (Ukrainian)
+                        option(value="KOI8-R") KOI8-R (Cyrillic)
+                        option(value="CP1251") CP1251 (Cyrillic)
+                        option(value="CP1256") CP1256 (Arabic)
+                        option(value="CP1257") CP1257 (baltic)
+        .control-group
+            .input-prepend
+                <% if (loggedIn) { %>
+                span.add-on
+                    i.icon-heart Enable logging back into active connection
+                input#connect-keep-alive(type="checkbox")
+                <% } %>
+        .control-group
+            a(id="connect-button", class="btn btn-primary spacing-right", type="button") Connect
+            a(id="connect-more-options-button", class="btn", type="button") More Options
+
+script(id="mainview_settings", type="text/x-underscore-template")
+    #home_parent
+        a.mainview_button#home Home
+    p#settings-soon If there is no ideas here, it will be removed, Chris?
+
+script(id="titlebar", type="text/x-underscore-template")
+    .titlebar
+        span(class="window_title") <%=title%>
+        span(id="topic") <%=topic%>
+
+script(id="chat", type="x-underscore-template")
+    #main-window
+        #chat-window
+            #chat-bar.bar
+            #chat-contents.bar
+            #input-container.bar
+                .input
+                    input(id="chat-input")
+                    a(id="chat-button", class="btn disabled") Send
+        #user-window
+            #user-bar.bar
+                .titlebar
+                    span(class='window_title') User List
+            #user-list.bar
+
+script(id="channel", type="text/x-underscore-template")
+    span(class="channel-name") <%=name%>
+    <% if (notStatus) { %>
+    .close-button ×
+    span(class="badge badge-important unread", title="Unread Messages") <%=unread%>
+    span(class="badge badge-info unread-highlights", title="Unread Highlights") <%=unreadHighlights%>
+    <% } %>
+
+script(id="user_box", type="text/x-underscore-template")
+    div.user_box_element
+        i(class="icon-user icon-white spacing-right")
+        <%=nick%>
+    div.user_box_element
+        .close-button ×
+        i(class="icon-asterisk icon-white spacing-right")
+        <%=server%>
+
+script(id="userlist_user", type="text/x-underscore-template")
+    div(class="userlist_user_info")
+        div(class="userlist_user_name") <%=role%><%=nick%>
+
+script(id="action-message", type="text/x-underscore-template")
+    .chat_action
+        b * <%=user%>&nbsp;
+        span <%=content%>
+    .chat-time
+        span <%=timeStamp%>
+
+script(id="topic-message", type="x-underscore-template")
+    i.icon-exclamation-sign
+    b
+        <%=nick%> 
+    | has changed the topic to 
+    i
+        <%=topic%>
+    
+script(id="message", type="text/x-underscore-template")
+    .chat-name
+        b <%=user%>
+    div(class!="chat-message <%=type%>")
+        span <%=content%>
+    .chat-time
+        span <%=timeStamp%>
+
+script(id="joinpart-message", type="text/x-underscore-template")
+    
+    span(class="{{type}}_img")
+    span <b><%=nick%></b> <%=action%> the channel <%=reason%> <%=message%>
+
+script(id="nickchange-message", type="text/x-underscore-template")
+    span <b><%=oldNick%></b> is now known as <%=newNick%>
+
+script(id="alert", type="text/x-underscore-template")
+    .alert(class="<%=type%>")
+        a(class="close", data-dismiss="alert", href="#") &times;
+        <%=content%>
