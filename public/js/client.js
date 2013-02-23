@@ -84,6 +84,17 @@ $(function() {
             chatWindow.stream.add({sender: data.from.toLowerCase(), raw: data.text, type: 'pm'});
         }
     });
+    
+    //Bug Fix Issue ACTION (WORKAROUND)
+    irc.socket.on('action', function(data) {
+        var chatWindow = irc.chatWindows.getByName(data.to.toLowerCase());
+        var type = 'message';
+        if (data.to.substr(0, 1) === '#') {
+            chatWindow.stream.add({sender: data.from, raw: ' ACTION ' + data.text, type: type});
+        } else if(data.to !== irc.me.get('nick')) {
+            chatWindow.stream.add({sender: data.from.toLowerCase(), raw: ' ACTION ' + data.text, type: 'pm'});
+        }
+    });
 
     irc.socket.on('pm', function(data) {
         var chatWindow = irc.chatWindows.getByName(data.nick.toLowerCase());

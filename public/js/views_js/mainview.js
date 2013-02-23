@@ -8,8 +8,8 @@ var MainView = Backbone.View.extend({
     events: {
         'click #connect-button': 'connect',
         'click #connect-more-options-button': 'more_options',
-        'click #log-button': 'login',
-        'click #reg-button': 'register',
+        'click #login-button': 'login',
+        'click #register-button': 'register',
         'keypress': 'connectOnEnter',
         'click #connect-secure': 'toggle_ssl_options'
     },
@@ -29,10 +29,10 @@ var MainView = Backbone.View.extend({
             if($('#connect-button').length){
             this.connect(event);
         }
-        if ($('#log-button').length) {
+        if ($('#login-button').length) {
           this.login();
         }
-        if ($('#reg-button').length) {
+        if ($('#register-button').length) {
           this.register();
         }
     },
@@ -96,25 +96,25 @@ var MainView = Backbone.View.extend({
     login: function() {
         $('.error').removeClass('error');
 
-        var username = $('#log-username').val();
-        var password = $('#log-password').val();
+        var username = $('#login-username').val();
+        var password = $('#login-password').val();
 
         if (!username) {
-            $('#log-username').closest('.clearfix').addClass('error');
-            $('#log-username').addClass('error');
+            $('#login-username').closest('.clearfix').addClass('error');
+            $('#login-username').addClass('error');
         }
 
         if (!password) {
-            $('#log-password').closest('.clearfix').addClass('error');
-            $('#log-password').addClass('error');
+            $('#login-password').closest('.clearfix').addClass('error');
+            $('#login-password').addClass('error');
         }
 
         if(username && password){
             $('form').append(_.template($("#load_image").html()));
-            $('#log-button').addClass('disabled');
+            $('#login-button').addClass('disabled');
         }
 
-        irc.socket.emit(login, {
+        irc.socket.emit('login', {
             username: username,
             password: password
         });
@@ -123,25 +123,25 @@ var MainView = Backbone.View.extend({
     register: function() {
         $('.error').removeClass('error');
 
-        var username = $('#reg-username').val();
-        var password = $('#reg-password').val();
+        var username = $('#register-username').val();
+        var password = $('#register-password').val();
 
         if (!username) {
-            $('#reg-username').closest('.clearfix').addClass('error');
-            $('#reg-username').addClass('error');
+            $('#register-username').closest('.clearfix').addClass('error');
+            $('#register-username').addClass('error');
         }
 
         if (!password) {
-            $('#reg-password').closest('.clearfix').addClass('error');
-            $('#reg-password').addClass('error');
+            $('#register-password').closest('.clearfix').addClass('error');
+            $('#register-password').addClass('error');
         }
 
         if(username && password){
             $('form').append(_.template($("#load_image").html()));
-            $('#reg-button').addClass('disabled');
+            $('#register-button').addClass('disabled');
         }
 
-        irc.socket.emit(register, {
+        irc.socket.emit('register', {
             username: username,
             password: password
         });
