@@ -5,6 +5,12 @@ script(id="main_application", type="text/x-underscore-template")
         #channels
         #hint-box.text-center
             h4 Hint-Box 
+                a(href="#") /join
+                a(href="#") /part
+                a(href="#") /nick
+                a(href="#") /topic
+                a(href="#") /me
+                
     .content
     
 script(id="load_image", type="text/x-underscore-template")
@@ -18,6 +24,12 @@ script(id="mainview_home", type="text/x-underscore-template")
         li.mainview_button#settings
             i.icon-cogs
             span Settings
+        li.mainview_button#login
+            i.icon-lock
+            span Login
+        li.mainview_button#register
+            i.icon-group
+            span Register
 
 script(id="mainview_main", type="text/x-underscore-template")
     #mainview.text-center
@@ -102,18 +114,46 @@ script(id="mainview_connection", type="text/x-underscore-template")
                 input#connect-keep-alive(type="checkbox")
                 <% } %>
         .control-group
-            a(id="connect-button", class="btn btn-primary spacing-right", type="button") Connect
-            a(id="connect-more-options-button", class="btn", type="button") More Options
+            a#connect-button.btn.btn-primary.spacing-right(type="button") Connect
+            a#connect-more-options-button.btn(type="button") More Options
 
 script(id="mainview_settings", type="text/x-underscore-template")
     #home_parent
         a.mainview_button#home Home
     p#settings-soon If there is no ideas here, it will be removed, Chris?
 
+script(id="mainview_login", type="text/x-underscore-template")
+    #home_parent
+        a.mainview_button#home Home
+    form.form-inline
+        .control-group
+            .input-prepend
+                span.add-on
+                    i.icon-user
+                input#login-username(type="text", placeholder="Username")
+        .control-group
+            .input-prepend
+                span.add-on
+                    i.icon-key
+                input#login-password(type="password", placeholder="Password")
+    a(id="login-button", class="btn btn-primary", type="submit") Login
+
+script(id="mainview_register", type="text/x-underscore-template")
+    #home_parent
+        a.mainview_button#home Home
+    form.form-inline
+        .control-group
+            label(for="register-username") Username
+            input#register-username(type="text")
+        .control-group
+            label(for="register-password") Password
+            input#register-password(type="password")
+        a#register-button.btn.btn-primary(type="button") Register
+
 script(id="titlebar", type="text/x-underscore-template")
     .titlebar
-        span(class="window_title") <%=title%>
-        span(id="topic") <%=topic%>
+        span.window_title(class="window_title") <%=title%>
+        span#topic <%=topic%>
 
 script(id="chat", type="x-underscore-template")
     #main-window
@@ -122,34 +162,34 @@ script(id="chat", type="x-underscore-template")
             #chat-contents.bar
             #input-container.bar
                 .input
-                    input(id="chat-input")
-                    a(id="chat-button", class="btn disabled") Send
+                    input#chat-input
+                    a#chat-button.btn.btn-primary.disabled Send
         #user-window
             #user-bar.bar
                 .titlebar
-                    span(class='window_title') User List
+                    span.window_title User List
             #user-list.bar
 
 script(id="channel", type="text/x-underscore-template")
-    span(class="channel-name") <%=name%>
+    span.channel-name <%=name%>
     <% if (notStatus) { %>
     .close-button ×
-    span(class="badge badge-important unread", title="Unread Messages") <%=unread%>
-    span(class="badge badge-info unread-highlights", title="Unread Highlights") <%=unreadHighlights%>
+    span.badge.badge-important.unread(title="Unread Messages") <%=unread%>
+    span.badge.badge-info.unread-highlights(title="Unread Highlights") <%=unreadHighlights%>
     <% } %>
 
 script(id="user_box", type="text/x-underscore-template")
     div.user_box_element
-        i(class="icon-user icon-white spacing-right")
+        i.icon-user.icon-white.spacing-right
         <%=nick%>
     div.user_box_element
         .close-button ×
-        i(class="icon-asterisk icon-white spacing-right")
+        i.icon-asterisk.icon-white.spacing-right
         <%=server%>
 
 script(id="userlist_user", type="text/x-underscore-template")
-    div(class="userlist_user_info")
-        div(class="userlist_user_name") <%=role%><%=nick%>
+    div.userlist_user_info
+        div.userlist_user_name <%=role%><%=nick%>
 
 script(id="action-message", type="text/x-underscore-template")
     .chat_action
