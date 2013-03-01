@@ -110,7 +110,7 @@ var MainView = Backbone.View.extend({
             $('#login-password').addClass('error');
         }
 
-        if(username && password){
+        if (username && password) {
             $('form').append(_.template($("#load_image").html()));
             $('#login-button').addClass('disabled');
         }
@@ -137,7 +137,7 @@ var MainView = Backbone.View.extend({
             $('#register-password').addClass('error');
         }
 
-        if(username && password){
+        if (username && password) {
             $('form').append(_.template($("#load_image").html()));
             $('#register-button').addClass('disabled');
         }
