@@ -1,14 +1,14 @@
 // Collection of messages that belong to a frame
 var Stream = Backbone.Collection.extend({
-  model: Message,
+    model: Message,
 
-  unread: function() {
-    return this.filter(function(msg) { return msg.get('unread'); });
-  },
+    unread: function() {
+        return this.filter(function(msg) { return msg.get('unread'); });
+    },
 
-  unreadHighlights: function() {
-    return this.filter(function(msg) { return msg.get('unreadHighlgihts'); });
-  }
+    unreadHighlights: function() {
+        return this.filter(function(msg) { return msg.get('unreadHighlgihts'); });
+    }
 });
 
 // All channels/private message chats a user has open
