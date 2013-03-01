@@ -43,7 +43,8 @@ var MessageView = Backbone.View.extend({
                 html = _.template($("#joinpart-message").html(), {
                     type: type,
                     nick: this.model.get('nick'),
-                    action: type === 'join' ? 'joined' : 'left'
+                    action: type === 'join' ? 'joined' : 'left',
+                    reason: ''
                 });
                 break;
             case 'quit':
