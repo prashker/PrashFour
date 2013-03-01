@@ -5,12 +5,11 @@ script(id="main_application", type="text/x-underscore-template")
         #channels
         #hint-box.text-center
             h4 Hint-Box 
-            a(href="#") /join
-            a(href="#") /part
-            a(href="#") /nick
-            a(href="#") /topic
-            a(href="#") /me
-                
+            button.btn.btn-success /join
+            button.btn.btn-success /part
+            button.btn.btn-success /nick
+            button.btn.btn-success /topic
+            button.btn.btn-success /me                
     .content
     
 script(id="load_image", type="text/x-underscore-template")
@@ -190,6 +189,8 @@ script(id="user_box", type="text/x-underscore-template")
 script(id="userlist_user", type="text/x-underscore-template")
     div.userlist_user_info
         div.userlist_user_name <%=role%><%=nick%>
+            span.userlist_user_buttons
+                button.btn.btn-info.pmbutton PM
 
 script(id="action-message", type="text/x-underscore-template")
     .chat_action
