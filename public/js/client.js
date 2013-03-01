@@ -289,9 +289,7 @@ $(function() {
         channel = irc.chatWindows.getByName(data.name);
 
         if (data.messages) {
-            $.each(data.messages.reverse(), function(index, message){
-                console.log(message);
-                
+            $.each(data.messages.reverse(), function(index, message){                
                 if($('#' + message._id).length) {
                     return true; //continue to next iteration
                 }
@@ -307,14 +305,12 @@ $(function() {
                     });
                 } 
                 else {
-                    console.log("yes");
                     message_html = _.template($("#message").html(), {
                         user: message.user,
                         content: message.message,
                         timeStamp: moment(message.date).format('ddd MMM D YYYY, h:mmA'),
                         type: 'backlog'
                     });
-                    console.log(message_html);
                 }
 
 
