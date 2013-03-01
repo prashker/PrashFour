@@ -96,8 +96,8 @@ $(function() {
             var channelTab = channelTabs[channelTabs.length-1];
             channel.set({
                 topic: value.topic,
-                unread: value.unread_messages,
-                unreadHighlights: value.unread_highlights
+                unread: 0,
+                unreadHighlights: 0
             });
             
             channelTab.updateUnreadCounts();
