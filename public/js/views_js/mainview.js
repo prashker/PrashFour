@@ -26,12 +26,15 @@ var MainView = Backbone.View.extend({
 
     connectOnEnter: function(event) {
         if (event.keyCode !== 13) return;
-            if($('#connect-button').length){
+        
+        if($('#connect-button').length){
             this.connect(event);
         }
+        
         if ($('#login-button').length) {
           this.login();
         }
+        
         if ($('#register-button').length) {
           this.register();
         }
