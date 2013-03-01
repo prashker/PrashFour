@@ -7,6 +7,7 @@ var ChatApplicationView = Backbone.View.extend({
 
         // Detect window focus so new message alerts come in
         // when window is not focused, even on current tab
+        /*
         var blurTimer, activeChat;
         $(window).blur(function() {
             blurTimer = setTimeout(function() {
@@ -23,6 +24,9 @@ var ChatApplicationView = Backbone.View.extend({
                 activeChat.set('active', true); 
             }
         });
+        */
+        
+        //CURRENTLY BROKEN
         
         //Can I replace with with events: { 'focus window' : 'event1' } ?
 
