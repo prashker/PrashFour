@@ -1,10 +1,10 @@
 var ChannelListView = Backbone.View.extend({
     el: '#channels',
 
-      initialize: function() {
-            irc.chatWindows.bind('add', this.addChannel, this);
-            this.channelTabs = []
-      },
+    initialize: function() {
+        irc.chatWindows.bind('add', this.addChannel, this);
+        this.channelTabs = []; //Could have a model like the others, but meh...
+    },
 
     addChannel: function(chatWindow) {
         var $el = $(this.el);

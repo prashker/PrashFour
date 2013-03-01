@@ -41,7 +41,6 @@ var ChatWindow = Backbone.Model.extend({
     },
 
     initialize: function() {
-        console.log('chat window created');
         this.stream = new Stream();
         this.stream.bind('add', this.setUnread, this);
         this.stream.channel = this;
@@ -49,7 +48,6 @@ var ChatWindow = Backbone.Model.extend({
     },
 
     part: function() {
-        console.log('Leaving ' + this.get('name'));
         this.destroy();
     },
 
