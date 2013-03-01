@@ -86,7 +86,7 @@ html { overflow: hidden; }
 }
 
 #mainview ul li:hover {
-    background: #A7DBD8;
+    background: #FFB739;
     cursor: pointer;
     border-radius: 5px;
 }
