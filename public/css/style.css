@@ -379,7 +379,6 @@ html { overflow: hidden; }
     width: 100%;
 }
 
-
 .userlist_user_info{
     display: table-cell;
     width: 87%;
@@ -393,8 +392,6 @@ html { overflow: hidden; }
     text-overflow: ellipsis;
 }
 
-.userlist_user_time{
+.userlist_user_buttons {
     margin-left: 5px;
-    color: #666666;
 }
-
