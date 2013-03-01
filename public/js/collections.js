@@ -58,6 +58,7 @@ var WindowList = Backbone.Collection.extend({
         var pms = this.byType('pm');
 
         var count = 0;
+        //http://stackoverflow.com/questions/7722048/getting-the-sum-of-a-collection-all-models-with-backbone-js
         count = channels.reduce(function(prev, chat) {
           return prev + chat.get('unreadHighlights');
         }, 0);
