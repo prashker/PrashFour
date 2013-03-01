@@ -1,0 +1,9 @@
+Server side login / Logging functionality has been implemented.
+
+If mongodb is running on the default port it should disconnect no problem if node app is rune after launching mongo. 
+
+Currently the "logging" only stores messages (so no joins/parts/kicks, etc)
+
+We'll see how hard it'll be to implement the rest.
+
+The professor said these are schema-less but they still have a sort of schema, so we have that in the models.js which mongoose handles nicely (much better than mongo).
