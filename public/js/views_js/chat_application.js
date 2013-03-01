@@ -1,6 +1,6 @@
 var ChatApplicationView = Backbone.View.extend({
-  className: 'container-fluid',
-  originalTitle: document.title,
+    className: 'container-fluid',
+    originalTitle: document.title,
 
     initialize: function() {
         irc.chatWindows.bind('change:unread', this.showUnread, this).bind('change:unreadHighlights', this.showUnread, this)
@@ -19,10 +19,12 @@ var ChatApplicationView = Backbone.View.extend({
           }, 1000);
         }).focus(function() {
             clearTimeout(blurTimer);
-            if(activeChat && activeChat.set) { 
+            if (activeChat && activeChat.set) { 
                 activeChat.set('active', true); 
             }
         });
+        
+        //Can I replace with with events: { 'focus window' : 'event1' } ?
 
         this.render();
     },
