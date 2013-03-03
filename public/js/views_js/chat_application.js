@@ -3,33 +3,7 @@ var ChatApplicationView = Backbone.View.extend({
     originalTitle: document.title,
 
     initialize: function() {
-        irc.chatWindows.bind('change:unread', this.showUnread, this).bind('change:unreadHighlights', this.showUnread, this)
-
-        // Detect window focus so new message alerts come in
-        // when window is not focused, even on current tab
-        /*
-        var blurTimer, activeChat;
-        $(window).blur(function() {
-            blurTimer = setTimeout(function() {
-                // Only assign if there's currently an active window
-                // Guards against losing activeChat if there's a second blur event
-                activeChat = irc.chatWindows.getActive() ? irc.chatWindows.getActive() : activeChat;
-                if (activeChat && activeChat.set) { 
-                    activeChat.set('active', false); 
-                }
-          }, 1000);
-        }).focus(function() {
-            clearTimeout(blurTimer);
-            if (activeChat && activeChat.set) { 
-                activeChat.set('active', true); 
-            }
-        });
-        */
-        
-        //CURRENTLY BROKEN
-        
-        //Can I replace with with events: { 'focus window' : 'event1' } ?
-
+        irc.chatWindows.bind('change:unread', this.showUnread, this).bind('change:unreadHighlights', this.showUnread, this);
         this.render();
     },
 
@@ -40,8 +14,13 @@ var ChatApplicationView = Backbone.View.extend({
         } 
         else {
             this.channelList = new ChannelListView;
-            $('.slide').css('display', 'inline-block');
         }
+        
+        
+        $('#hint-box button').click(function() {
+            console.log("A help-text button was clicked");
+        });
+        
         return this;
     },
 
