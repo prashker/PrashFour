@@ -27,8 +27,6 @@ var ChatView = Backbone.View.extend({
         );
         this.updateTitle();
         this.handleInput();
-        this.handleScroll();
-        this.handleClick();
         $('#chat-input').focus();
         return this;
     },
@@ -37,8 +35,8 @@ var ChatView = Backbone.View.extend({
         $('#chat-button').click( function(){
             var message = $('#chat-input').val();
                 if (message.substr(0, 1) === '/') {
-                    var commandText = message.substr(1).split(' ');
-                    irc.commands.handle(commandText);
+                    var command = message.split(' ');
+                    irc.commandHandle(command);
                 } 
                 else {
                     irc.socket.emit('say', {target: irc.chatWindows.getActive().get('name'), message:message});
@@ -46,7 +44,6 @@ var ChatView = Backbone.View.extend({
             $('#chat-input').val('');
         });
      
-        var keydownEnter = false;
         $('#chat-input').bind({
             // Enable button if there's any input
             change: function() {
@@ -58,20 +55,14 @@ var ChatView = Backbone.View.extend({
                 }
             },
 
-            // Prevent tab moving focus for tab completion
             keydown: function(event) {
-                keydownEnter = (event.keyCode === 13);
-            },
-
-            keyup: function(event) {
-                var self = this;
                 if ($(this).val().length) {
-                    if (keydownEnter && event.keyCode === 13) {
+                    if (event.keyCode === 13) {
                         var message = $(this).val();
                         // Handle IRC commands
                         if (message.substr(0, 1) === '/') {
-                        var commandText = message.substr(1).split(' ');
-                        irc.commands.handle(commandText);
+                            var command = message.split(' ');
+                            irc.commandHandle(command);
                         } 
                         else {
                             // Send the message
@@ -87,7 +78,6 @@ var ChatView = Backbone.View.extend({
                 else {
                     $('#chat-button').addClass('disabled');
                 }
-                isEnter = false;
             }
         });
     },
@@ -126,12 +116,4 @@ var ChatView = Backbone.View.extend({
             }
         }
     },
-
-    handleScroll: function() {
-        //For later, maybe
-    },
-
-    handleClick: function() {
-        //For later, maybe
-    }
 });

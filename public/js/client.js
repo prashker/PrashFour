@@ -333,86 +333,67 @@ $(function() {
     });
 
 
-
-    //Constructor Invocation Pattern (AHHHH GET OUT MY HEAD)
-    irc.commands = (function(){
-        var commandStore = {
+    irc.commandHandle = function (command) {
+        switch (command[0]) {
         
-        };
-
-        that = {
-            add: function(name, handler) {
-                commandStore[name] = {
-                  handler: handler,
-                };
-            },
-
-            handle: function(args){
-                var command = args[0];
-                var handler = commandStore[command] && commandStore[command].handler;
-
-                args.splice(0, 1);
-
-                if (typeof(handler) === 'function'){
-                  handler(args, command);
+            case '/join':
+                irc.socket.emit('join', command[1]);
+                break;
+            
+            case '/part':
+                //If a channel name was specified
+                if (command[1]) {
+                  irc.socket.emit('part', command[1]);
+                  irc.appView.channelList.channelTabs[0].setActive(); //Set STATUS (FIX THIS) as Active
+                } 
+                //If not part the active channel
+                else {
+                  irc.socket.emit('part', irc.chatWindows.getActive().get('name'));
+                  irc.appView.channelList.channelTabs[0].setActive(); //Set STATUS (FIX THIS) as Active
                 }
-            }
-        };
-
-        return that;
-    }());
-
-    irc.commands.add('join', function(args){
-        irc.socket.emit('join', args[0]);
-    });
-
-    irc.commands.add('part', function(args) {
-        if (args[0]) {
-          irc.socket.emit('part', args[0]);
-          irc.appView.channelList.channelTabs[0].setActive();
-        } else {
-          irc.socket.emit('part', irc.chatWindows.getActive().get('name'));
-          irc.appView.channelList.channelTabs[0].setActive();
+                break;
+                
+            case '/nick':
+                if (command[1]) {
+                    irc.socket.emit('nick', {newNick: command[1]});
+                }
+                break;
+            
+            case '/topic':
+                //Change active topic (obviously won't work if you don't have permissions)
+                irc.socket.emit('topic', {
+                    name: irc.chatWindows.getActive().get('name'),
+                    topic: command.splice(1).join(' '),
+                });
+                break;
+                
+            case '/me': 
+                //Action command (fun stuff)
+                irc.socket.emit('ACTION', {
+                    target: irc.chatWindows.getActive().get('name'),
+                    message: command.splice(1).join(' '),
+                });
+                break;
+            
+            case '/query': 
+                //Open a private message with a user
+                var target = command[1].toLowerCase();
+                var myNick = irc.me.get('nick');
+                if (typeof irc.chatWindows.getByName(target) === 'undefined') {
+                    irc.chatWindows.add({name: target, type: 'pm'});
+                }
+                irc.socket.emit('getOldMessages', {channelName: target, skip:0, amount: 50});
+                irc.socket.emit('say', {
+                    target: target,
+                    message: args.splice(1).join(" "),
+                });    
+                break;
+            
+            default:
+                console.log("Unhandled command");
+                break;
         }
-    });
-
-    irc.commands.add('nick', function(args){
-        if (args[0]) {
-            irc.socket.emit('nick', {nick : args[0]});
-        }
-    });
-
-    irc.commands.add('topic', function(args){
-        // If args[0] starts with # or &, a topic name has been provided
-        if (args[0].indexOf('#') === 0 || args[0].indexOf('&') === 0) {
-            irc.socket.emit('topic', {name: args.shift(), topic: args.join(' ')});
-        } else { // Otherwise, assume we're changing the current channel's topic
-            irc.socket.emit('topic', {
-                name: irc.chatWindows.getActive().get('name'), 
-                topic: args.join(' ')
-            });
-        }
-    });
-
-    irc.commands.add('me', function(args){
-        irc.socket.emit('action', {
-            target: irc.chatWindows.getActive().get('name'),
-            message: args.join(" ")
-        });
-    });
-
-    irc.commands.add('query', function(args){
-        var target = args[0].toLowerCase();
-        var myNick = irc.me.get('nick');
-        if (typeof irc.chatWindows.getByName(target) === 'undefined') {
-            irc.chatWindows.add({name: target, type: 'pm'});
-        }
-        irc.socket.emit('getOldMessages', {channelName: target, skip:0, amount: 50});
-        irc.socket.emit('say', {
-            target: target,
-            message: args.splice(1).join(" ")
-        });
-    });
+    }
 
 });
 
