@@ -9,7 +9,7 @@ var ChatApplicationView = Backbone.View.extend({
     },
 
     render: function() {
-        $('body').html($(this.el).html(_.template($("#main_application").html())));
+        $('body').html(this.$el.html(_.template($("#main_application").html())));
         
         if (!irc.connected) {
             this.mainview = new MainView;
