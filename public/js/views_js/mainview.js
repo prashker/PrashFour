@@ -15,7 +15,7 @@ var MainView = Backbone.View.extend({
     },
 
     render: function(event) {
-    $(this.el).html(_.template($("#mainview_main").html()));
+    this.$el.html(_.template($("#mainview_main").html()));
 
     // Navigation to different mainview panes
     $('#mainview').html(_.template($("#mainview_" + (event != undefined ? event.currentTarget.id : 'home')).html(),{'loggedIn': irc.loggedIn}));

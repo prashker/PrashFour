@@ -11,7 +11,7 @@ var UserView = Backbone.View.extend({
     
 
     render: function() {
-        $(this.el).html(_.template($("#userlist_user").html(), (this.user.model.attributes)));
+        this.$el.html(_.template($("#userlist_user").html(), (this.user.model.attributes)));
         return this;
     },
     
@@ -36,6 +36,6 @@ var UserListView = Backbone.View.extend({
     add: function(User) {
         var userView = new UserView({model: User});
         User.view = userView;
-        $(this.el).append(userView.render().el);
+        this.$el.append(userView.render().el);
     }
 });

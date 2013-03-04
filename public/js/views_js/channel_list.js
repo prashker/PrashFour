@@ -7,10 +7,9 @@ var ChannelListView = Backbone.View.extend({
     },
 
     addChannel: function(chatWindow) {
-        var $el = $(this.el);
         var view = new ChannelTabView({model: chatWindow});
         this.channelTabs.push(view);
-        $el.append(view.render().el);
+        this.$el.append(view.render().el);
 
         var name = chatWindow.get('name');
         var type = chatWindow.get('type');
