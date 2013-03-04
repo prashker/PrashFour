@@ -8,7 +8,8 @@ var ChannelTabView = Backbone.View.extend({
 
     initialize: function() {
         this.model.stream.bind('add', this.updateUnreadCounts, this);
-        this.model.bind('destroy', this.switchAndRemove, this).bind('change:active', this.removeUnread, this);
+        this.model.bind('destroy', this.switchAndRemove, this);
+        this.model.bind('change:active', this.removeUnread, this);
     },
 
     render: function() {
@@ -62,9 +63,9 @@ var ChannelTabView = Backbone.View.extend({
         if ($(this.el).hasClass('active')) {
             // Go to previous frame unless it's status
             if ($(this.el).next().length) {
-            $nextTab = $(this.el).next();
+                $nextTab = $(this.el).next();
             } else {
-            $nextTab = $(this.el).prev();
+                $nextTab = $(this.el).prev();
             }
         }
         this.remove();

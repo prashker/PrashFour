@@ -188,7 +188,7 @@ script(id="user_box", type="text/x-underscore-template")
 
 script(id="userlist_user", type="text/x-underscore-template")
     div.userlist_user_info
-        div.userlist_user_name <%=role%><%=nick%>
+        div.userlist_user_name <%=prefix%><%=nick%>
             span.userlist_user_buttons
                 button.btn.btn-info.pmbutton PM
 
@@ -216,7 +216,7 @@ script(id="message", type="text/x-underscore-template")
         span <%=timeStamp%>
 
 script(id="joinpart-message", type="text/x-underscore-template")
-    span(class!="<%=type%>_img")
+    i.icon-exclamation-sign
     span <b><%=nick%></b> <%=action%> the channel <%=reason%>
 
 script(id="nickchange-message", type="text/x-underscore-template")

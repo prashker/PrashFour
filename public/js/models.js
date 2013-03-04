@@ -76,6 +76,7 @@ var User = Backbone.Model.extend({
     },
 
     defaults: {
-        opStatus: ''
+        nick: "",
+        prefix: ""
     }
 });
