@@ -103,8 +103,8 @@ $(function() {
             channelTab.updateUnreadCounts();
             if (chanName[0] == '#') {
                 channel.userList = new UserList(channel);
-                $.each(value.users, function(user, role) {
-                    channel.userList.add({nick: user, role: role});
+                $.each(value.users, function(user, prefix) {
+                    channel.userList.add({nick: user, prefix: prefix});
                 });
                 irc.socket.emit('getOldMessages',{channelName: chanName, skip:0, amount: 50});
             } 
@@ -180,7 +180,7 @@ $(function() {
                 irc.chatWindows.add({name: chanName});
                 channel = irc.chatWindows.getByName(chanName);
             }
-            channel.userList.add({nick: data.nick, role: data.role});
+            channel.userList.add({nick: data.nick, prefix: data.prefix});
             var joinMessage = new Message({type: 'join', nick: data.nick});
             channel.stream.add(joinMessage);
         }
@@ -218,8 +218,8 @@ $(function() {
     irc.socket.on('names', function(data) {
         var channel = irc.chatWindows.getByName(data.channel.toLowerCase());
         channel.userList = new UserList(channel);
-        $.each(data.nicks, function(nick, role) {
-            channel.userList.add(new User({nick: nick, role: role}));
+        $.each(data.nicks, function(nick, prefix) {
+            channel.userList.add(new User({nick: nick, prefix: prefix}));
         });
     });
 
@@ -378,15 +378,10 @@ $(function() {
             case '/query': 
                 //Open a private message with a user
                 var target = command[1].toLowerCase();
-                var myNick = irc.me.get('nick');
                 if (typeof irc.chatWindows.getByName(target) === 'undefined') {
                     irc.chatWindows.add({name: target, type: 'pm'});
                 }
                 irc.socket.emit('getOldMessages', {channelName: target, skip:0, amount: 50});
-                irc.socket.emit('say', {
-                    target: target,
-                    message: args.splice(1).join(" "),
-                });    
                 break;
             
             default:

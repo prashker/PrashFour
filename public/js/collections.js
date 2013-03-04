@@ -32,12 +32,7 @@ var WindowList = Backbone.Collection.extend({
     },
 
     setActive: function(selected) {
-        //This is here for private messages
         var name = selected.get('name');
-        if ((name[0] !== '#' && name !== 'status') && selected.stream.models.length < 1) {
-            selected.set({active: false});
-            return;
-        }
         this.each(function(chat) {
             chat.set({active: false});
         });
@@ -48,7 +43,7 @@ var WindowList = Backbone.Collection.extend({
     // Restrict to a certain type of chat window
     byType: function(type) {
         return this.filter(function(chat) {
-        return chat.get('type') === type;
+            return chat.get('type') === type;
         });
     },
 
