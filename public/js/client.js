@@ -285,21 +285,45 @@ $(function() {
         // remove login and register button if no database
         irc.socket.emit('getDatabaseState', {});
     });
-
+    
+    irc.socket.on('whois', function(data) {
+        //RESPONSE FORMAT
+        /*
+            {
+                nick: "Ned",
+                user: "martyn",
+                host: "10.0.0.18",
+                realname: "Unknown",
+                channels: ["@#purpledishwashers", "#blah", "#mmmmbacon"],
+                server: "*.dollyfish.net.nz",
+                serverinfo: "The Dollyfish Underworld",
+                operator: "is an IRC Operator"
+            }
+        */
+        var activeStream = irc.chatWindows.getActive().stream;
+        if (data.info) {
+            for (var whoisKey in data.info) {
+                var message = new Message({sender: "WHOIS", raw: data.info[whoisKey], type: 'whois'});
+                activeStream.add(message);
+            }
+        }
+        
+    });      
+      
     irc.socket.on('oldMessages', function(data){
         var output = '';
         channel = irc.chatWindows.getByName(data.name);
 
         if (data.messages) {
             $.each(data.messages.reverse(), function(index, message){                
-                if($('#' + message._id).length) {
+                if ($('#' + message._id).length) {
                     return true; //continue to next iteration
                 }
 
                 var type = '';
-                var message_html;
+                var oldmessage_html;
                 if (message.message.substr(1, 6) === 'ACTION') {
-                    message_html = _.template($("#action-message").html(), {
+                    oldmessage_html = _.template($("#action-message").html(), {
                         user: message.user,
                         content: message.message.substr(8),
                         timeStamp: moment(message.date).format('ddd MMM D YYYY, h:mmA'),
@@ -307,7 +331,7 @@ $(function() {
                     });
                 } 
                 else {
-                    message_html = _.template($("#message").html(), {
+                    oldmessage_html = _.template($("#message").html(), {
                         user: message.user,
                         content: message.message,
                         timeStamp: moment(message.date).format('ddd MMM D YYYY, h:mmA'),
@@ -316,17 +340,15 @@ $(function() {
                 }
 
 
-                if(message.user == irc.me.get('nick')){
+                if (message.user == irc.me.get('nick')){
                     type = 'message-me';
                 } else {
-                    message_html = utils.highlightCheck(message_html);
+                    oldmessage_html = utils.highlightCheck(oldmessage_html);
                 }
                 
-            
-
-                message_html = utils.linkify(message_html);
-                message_html = '<div class="message-box ' + type + '">' + message_html + '</div>';
-                output += message_html;
+                oldmessage_html = utils.linkify(oldmessage_html);
+                oldmessage_html = '<div class="message-box ' + type + '">' + oldmessage_html + '</div>';
+                output += oldmessage_html;
             });
         }
         
@@ -379,12 +401,15 @@ $(function() {
             
             case '/query': 
                 //Open a private message with a user
-                var target = command[1].toLowerCase();
-                if (typeof irc.chatWindows.getByName(target) === 'undefined') {
-                    irc.chatWindows.add({name: target, type: 'pm'});
+                var nick = command[1].toLowerCase();
+                if (typeof irc.chatWindows.getByName(nick) === 'undefined') {
+                    irc.chatWindows.add({name: nick, type: 'pm'});
                 }
-                irc.socket.emit('getOldMessages', {channelName: target, skip:0, amount: 50});
+                irc.socket.emit('getOldMessages', {channelName: nick, skip:0, amount: 50});
                 break;
+                
+            case '/whois':
+                var 
             
             default:
                 console.log("Unhandled command");
