@@ -3,7 +3,7 @@ var ChannelListView = Backbone.View.extend({
 
     initialize: function() {
         irc.chatWindows.bind('add', this.addChannel, this);
-        this.channelTabs = []; //Could have a model like the others, but meh...
+        this.channelTabs = [];
     },
 
     addChannel: function(chatWindow) {
