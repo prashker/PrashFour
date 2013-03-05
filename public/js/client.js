@@ -58,9 +58,11 @@ $(function() {
 
     irc.socket.on('login_success', function(data) {
         window.irc.loggedIn = true;
-        if(data.exists){
+        if (data.establishedConnectionExists) {
+            //Connect back to established connection
             irc.socket.emit('connect', {});
         } else {
+            //Load the connection dialog mainview_connection
             irc.appView.mainview.render({currentTarget: {id: "connection"}});
         }
     });

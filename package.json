@@ -9,6 +9,7 @@
 		"socket.io": "",
 		"connect-assets": "",
 		"jade": "",
-		"irc": ""
+		"irc": "",
+		"password-hash": ""
 	}
 }
