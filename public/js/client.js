@@ -369,7 +369,7 @@ $(function() {
                 
             case '/me': 
                 //Action command (fun stuff)
-                irc.socket.emit('ACTION', {
+                irc.socket.emit('action', {
                     target: irc.chatWindows.getActive().get('name'),
                     message: command.splice(1).join(' '),
                 });
