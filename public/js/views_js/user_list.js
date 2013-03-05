@@ -19,7 +19,7 @@ var UserView = Backbone.View.extend({
     handlePM: function() {
         //commandHandle takes arrays of it, split by spaces
         irc.commandHandle(["/query", this.user.model.attributes.nick]);
-    }
+    },
     
     handleWHOIS: function() {
         irc.commandHandle(["/whois", this.user.model.attributes.nick]);
