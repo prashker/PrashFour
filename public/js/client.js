@@ -409,7 +409,9 @@ $(function() {
                 break;
                 
             case '/whois':
-                var 
+                var nick = command[1].toLowerCase();
+                irc.socket.emit('whois', {nick: nick});
+                break;
             
             default:
                 console.log("Unhandled command");
