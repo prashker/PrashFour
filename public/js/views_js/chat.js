@@ -88,16 +88,9 @@ var ChatView = Backbone.View.extend({
         var sender = msg.get('sender');
         var type = msg.get('type');
 
-        var nicksToIgnore = ['', 'notice', 'status'];
-
-        if (nicksToIgnore.indexOf(sender) === -1 && type === 'message'){
-            var user = this.model.userList.getByNick(sender);
-            var element = $(user.view.el);
-            element.prependTo(element.parent());
-        }
-
         $chatWindow.append(view.el);
 
+        //If me and message or PM add message-me
         if (sender === irc.me.get('nick') && ['message', 'pm'].indexOf(type) !== -1) {
             $(view.el).addClass('message-me');
         }
