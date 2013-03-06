@@ -1,6 +1,15 @@
 var ChatApplicationView = Backbone.View.extend({
     className: 'container-fluid',
     originalTitle: document.title,
+    
+    events: {
+        'click #hint-box button' : 'hintBoxButtonClick'
+    },
+    
+    hintBoxButtonClick : function() {
+        console.log("A help-text button was clicked");
+    },
+
 
     initialize: function() {
         irc.chatWindows.bind('change:unread', this.showUnread, this);
@@ -18,9 +27,7 @@ var ChatApplicationView = Backbone.View.extend({
             this.channelList = new ChannelListView;
         }
         
-        $('#hint-box button').click(function() {
-            console.log("A help-text button was clicked");
-        });
+        this.delegateEvents(); //Uses this.events
         
         return this;
     },
