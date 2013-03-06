@@ -174,7 +174,7 @@ $(function() {
         var chanName = data.channel.toLowerCase();
         if (data.nick === irc.me.get('nick')) {
             irc.chatWindows.add({name: chanName});
-            irc.socket.emit('getOldMessages',{channelName: chanName, skip:0, amount: 50});
+            irc.socket.emit('getOldMessages', {channelName: chanName, skip:0, amount: 50});
         } 
         else {
             var channel = irc.chatWindows.getByName(chanName);
@@ -226,19 +226,21 @@ $(function() {
     });
 
     irc.socket.on('nick', function(data) {
+        //If it was me
         if (data.oldNick === irc.me.get('nick'))
             irc.me.set('nick', data.newNick);
 
-        var channel = irc.chatWindows.getByName(data.channels[0]);
-        var user = channel.userList.getByNick(data.oldNick);
-        user.set({nick: data.newNick});
-        user.view.render();
-
         // Add nickmessage to all channels
+        // Adjust views
         var nickMessage = new Message({type: 'nick', oldNick: data.oldNick, newNick: data.newNick});
-        for( var i in data.channels ) {
-            channel = irc.chatWindows.getByName(data.channels[i]);
-            channel.stream.add(nickMessage);
+        for (var i in data.channels) {
+            var channel = irc.chatWindows.getByName(data.channels[i]);
+            if (channel) {
+                var userInChannelList = channel.userList.getByNick(data.oldNick); //Get the user from the channel userList
+                userInChannelList.set({nick: data.newNick}); //Change the nick value
+                userInChannelList.view.render(); //Rerender it
+                channel.stream.add(nickMessage);
+            }
         }
         
     });
