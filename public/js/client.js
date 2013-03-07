@@ -23,15 +23,18 @@ window.irc = {
 $(function() {
     irc.appView = new ChatApplicationView();
 
-
     //https://groups.google.com/forum/?fromgroups=#!searchin/socket_io/latency/socket_io/66oeLfcq_1I/Hv2D6U0F5qAJ
-    setInterval(function() {
-        emitTime = Date.now();
-        irc.socket.emit('latencyPING', {});
-    }, 3000);
     irc.socket.on('latencyPONG', function() {
-        console.log('Latency (round-trip time): ' + (Date.now() - emitTime) + 'ms');
-    });    
+        irc.lastLatency = Date.now() - irc.lastEmit;     
+        setTimeout(function() {
+            irc.lastEmit = Date.now();
+            irc.socket.emit('latencyPING', {});
+        }, 1000);
+    });
+       
+    irc.lastLatency = 0;
+    irc.lastEmit = Date.now();
+    irc.socket.emit('latencyPING', {});
 
     irc.socket.emit('getDatabaseState', {});
     irc.socket.on('databaseState', function(data) {
@@ -414,7 +417,13 @@ $(function() {
                 var nick = command[1].toLowerCase();
                 irc.socket.emit('whois', {nick: nick});
                 break;
-            
+                
+            case '/ping': 
+                var activeStream = irc.chatWindows.getActive().stream;
+                var message = new Message({sender: "ping", raw: "Latency: " + irc.lastLatency + " ms", type: 'ping'});
+                activeStream.add(message);
+                break;
+                
             default:
                 console.log("Unhandled command");
                 break;
