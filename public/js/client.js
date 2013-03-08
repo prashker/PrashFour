@@ -12,7 +12,9 @@
 
 
 window.irc = {
-    socket: io.connect(null, {port: PORT}),
+    //From 
+    //https://github.com/LearnBoost/socket.io-client/issues/251#issuecomment-2283801
+    socket: io.connect(null, {'force new connection': true, port: PORT}),
     chatWindows: new WindowList(),
     connected: false,
     loggedIn: false
@@ -226,6 +228,8 @@ $(function() {
         $.each(data.nicks, function(nick, prefix) {
             channel.userList.add(new User({nick: nick, prefix: prefix}));
         });
+        //Notify the handleInput method
+        channel.view.handleInput();
     });
 
     irc.socket.on('nick', function(data) {
