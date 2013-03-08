@@ -28,58 +28,50 @@ var ChatView = Backbone.View.extend({
         this.updateTitle();
         this.handleInput();
         $('#chat-input').focus();
+
         return this;
     },
 
     handleInput: function() {
+        var that = this;
+        
+        //Typeahead for Nicks
+        //http://stackoverflow.com/questions/12272680/jquery-bootstrap-updating-a-typeahead-after-events-removed-from-input
+        $('#chat-input').off();
+        $('#chat-input').data('typeahead', (data = null));
+        $('#chat-input').typeahead({
+            source: (irc.chatWindows.getActive().userList ? _.rest(_.toArray(irc.chatWindows.getActive().userList.getUsers()), 1) : [])
+        });
+        console.log("set input data to: ");
+        console.log((irc.chatWindows.getActive().userList ? _.rest(_.toArray(irc.chatWindows.getActive().userList.getUsers()), 1) : []));
+        
         $('#chat-button').click( function(){
-            var message = $('#chat-input').val();
-                if (message.substr(0, 1) === '/') {
-                    var command = message.split(' ');
-                    irc.commandHandle(command);
-                } 
-                else {
-                    irc.socket.emit('say', {target: irc.chatWindows.getActive().get('name'), message:message});
-                }
-            $('#chat-input').val('');
+            that.handleMessage();
         });
      
         $('#chat-input').bind({
-            // Enable button if there's any input
-            change: function() {
-                if ($(this).val().length) {
-                    $('#chat-button').removeClass('disabled');
-                } 
-                else {
-                    $('#chat-button').addClass('disabled');
-                }
-            },
-
             keydown: function(event) {
-                if ($(this).val().length) {
-                    if (event.keyCode === 13) {
-                        var message = $(this).val();
-                        // Handle IRC commands
-                        if (message.substr(0, 1) === '/') {
-                            var command = message.split(' ');
-                            irc.commandHandle(command);
-                        } 
-                        else {
-                            // Send the message
-                            irc.socket.emit('say', {target: irc.chatWindows.getActive().get('name'), message:message});
-                        }
-                        $(this).val('');
-                        $('#chat-button').addClass('disabled');
-                    }
-                    else {
-                        $('#chat-button').removeClass('disabled');
-                    }
-                } 
-                else {
-                    $('#chat-button').addClass('disabled');
+                if (event.keyCode === 13) {
+                    that.handleMessage();
                 }
             }
         });
+        
+
+    },
+    
+    handleMessage: function () {
+        var message = $('#chat-input').val();
+        if (message.length) {
+            if (message.substr(0, 1) === '/') {
+                var command = message.split(' ');
+                irc.commandHandle(command);
+            } 
+            else {
+                irc.socket.emit('say', {target: irc.chatWindows.getActive().get('name'), message:message});
+            }
+            $('#chat-input').val('');
+        }
     },
 
     addMessage: function(msg) {
