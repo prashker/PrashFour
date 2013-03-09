@@ -8,7 +8,7 @@
 html { overflow: hidden; }
 
 .typeahead {
-    margin-top: -100px !important;
+    margin-top: -200px !important; /*BOOTSTRAP Override (To make typeahead dropdown ABOVE the input box*/
 }
 
 .container-fluid {

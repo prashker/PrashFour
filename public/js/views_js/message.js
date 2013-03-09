@@ -7,27 +7,28 @@ var MessageView = Backbone.View.extend({
 
     render: function() {
         var nick = this.model.get('sender') || this.model.collection.channel.get('name');
+        
         var html;
 
         if (_.include(['join', 'part', 'nick', 'topic', 'quit'], this.model.get('type'))) {
             html = this.setText(this.model.get('type'));
         }
         else if (this.model.get('text') && this.model.get('text').substr(1, 6) === 'ACTION') {
-          html = _.template($('#action-message').html(), {
-            user: nick,
-            content: this.model.get('text').substr(8),
-            timeStamp: moment().format('ddd MMM D YYYY, h:mmA')
-          });
-          html = this.model.parse(html);
+            html = _.template($('#action-message').html(), {
+                user: nick,
+                content: this.model.get('text').substr(8),
+                timeStamp: moment().format('ddd MMM D YYYY, h:mmA')
+            });
+            html = this.model.parse(html);
         } 
         else {
-          html = _.template($("#message").html(), {
-            user: nick,
-            type: this.model.get('type'),
-            content: this.model.get('text'),
-            timeStamp: moment().format('ddd MMM D YYYY, h:mmA')
-          });
-          html = this.model.parse(html);
+            html = _.template($("#message").html(), {
+                user: nick,
+                type: this.model.get('type'),
+                content: this.model.get('text'),
+                timeStamp: moment().format('ddd MMM D YYYY, h:mmA')
+            });
+            html = this.model.parse(html);
         }
 
         this.$el.html(html);

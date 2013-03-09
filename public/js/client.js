@@ -111,7 +111,7 @@ $(function() {
             if (chanName[0] == '#') {
                 channel.userList = new UserList(channel);
                 $.each(value.users, function(user, prefix) {
-                    channel.userList.add({nick: user, prefix: prefix});
+                    channel.userList.add(new User({nick: user, prefix: prefix}));
                 });
                 irc.socket.emit('getOldMessages',{channelName: chanName, skip:0, amount: 50});
             } 
@@ -187,7 +187,7 @@ $(function() {
                 irc.chatWindows.add({name: chanName});
                 channel = irc.chatWindows.getByName(chanName);
             }
-            channel.userList.add({nick: data.nick, prefix: data.prefix});
+            channel.userList.add(new User({nick: data.nick, prefix: data.prefix}));
             var joinMessage = new Message({type: 'join', nick: data.nick});
             channel.stream.add(joinMessage);
         }
