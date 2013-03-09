@@ -38,6 +38,16 @@ var WindowList = Backbone.Collection.extend({
         });
         selected.set({active: true});
         selected.view.render();
+        //Render the chat view
+        
+        if (selected.userList) {
+            selected.userList.each(function(user) { 
+                if (user.has('nick')) {
+                    user.view.rebindEvents();
+                    //Rebind all the per-user options
+                }
+            });
+        }
     },
 
     // Restrict to a certain type of chat window
@@ -95,11 +105,12 @@ var UserList = Backbone.Collection.extend({
         });
     },
 
-    getUsers: function() {
+    getUsersNameArray: function() {
         var users = this.map(function(user) {
             return user.get('nick');
         });
         return users;
     }
+    
 });
 

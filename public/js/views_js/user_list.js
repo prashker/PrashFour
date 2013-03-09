@@ -12,12 +12,16 @@ var UserView = Backbone.View.extend({
     
 
     render: function() {
-        this.$el.html(_.template($("#userlist_user").html(), (this.user.model.attributes)));
+        this.$el.html(_.template($("#userlist_user").html(), (this.user.model.attributes)));      
         return this;
     },
     
+    rebindEvents: function() {
+        //Used when returning to this tab
+        this.delegateEvents();
+    },
+    
     handlePM: function() {
-        //commandHandle takes arrays of it, split by spaces
         irc.commandHandle(["/query", this.user.model.attributes.nick]);
     },
     

@@ -40,10 +40,18 @@ var ChatView = Backbone.View.extend({
         $('#chat-input').off();
         $('#chat-input').data('typeahead', (data = null));
         $('#chat-input').typeahead({
-            source: (irc.chatWindows.getActive().userList ? _.rest(_.toArray(irc.chatWindows.getActive().userList.getUsers()), 1) : [])
+            //first result in array is undefined, skip it
+            source: (irc.chatWindows.getActive().userList ? _.rest(_.toArray(irc.chatWindows.getActive().userList.getUsersNameArray()), 1) : []),
+            
+            matcher: function (item) {
+                if (item.toLowerCase().indexOf(this.query.toLowerCase()) == 0) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
         });
-        console.log("set input data to: ");
-        console.log((irc.chatWindows.getActive().userList ? _.rest(_.toArray(irc.chatWindows.getActive().userList.getUsers()), 1) : []));
         
         $('#chat-button').click( function(){
             that.handleMessage();
