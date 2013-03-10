@@ -8,6 +8,7 @@
 //= require 'utils.js'
 //= require 'models.js'
 //= require 'collections.js'
+//= require 'router.js'
 //= require_tree 'views_js'
 
 
