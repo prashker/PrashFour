@@ -15,25 +15,37 @@ var MainView = Backbone.View.extend({
     },
 
     render: function(event) {
-    $(this.el).html(_.template($("#mainview_main").html()));
+        var that = this;
+        
+        this.$el.html(_.template($("#mainview_main").html()));
 
-    // Navigation to different mainview panes
-    $('#mainview').html(_.template($("#mainview_" + (event != undefined ? event.currentTarget.id : 'home')).html(),{'loggedIn': irc.loggedIn}));
+        // Navigation to different mainview panes
+        $('#mainview').html(_.template($("#mainview_" + (event != undefined ? event.currentTarget.id : 'home')).html(), {'loggedIn': irc.loggedIn}));
 
-    $('.mainview_button').bind('click', $.proxy(this.render, this));
+        $('.mainview_button').bind('click', function(event) {
+            that.render(event);
+        });
+        
         return this;
     },
 
     connectOnEnter: function(event) {
-        if (event.keyCode !== 13) return;
-            if($('#connect-button').length){
+        if (event.keyCode !== 13) {
+            return;
+        }
+        
+        //Depending on which page we are, do the appropriate action when enter is pressed
+        
+        if ($('#connect-button').length){
             this.connect(event);
         }
+        
         if ($('#login-button').length) {
-          this.login();
+            this.login();
         }
+        
         if ($('#register-button').length) {
-          this.register();
+            this.register();
         }
     },
 
@@ -44,7 +56,6 @@ var MainView = Backbone.View.extend({
         var server = $('#connect-server').val(),
         nick = $('#connect-nick').val(),
         port = $('#connect-port').val(),
-        away = $('#connect-away').val(),
         realName = $('#connect-realName').val() || nick,
         secure = $('#connect-secure').is(':checked'),
         selfSigned = $('#connect-selfSigned').is(':checked'),
@@ -54,10 +65,12 @@ var MainView = Backbone.View.extend({
         keepAlive = false;
 
         if (!server) {
+            //Add error to the respective control-group
             $('#connect-server').closest('.control-group').addClass('error');
         }
 
         if (!nick) {
+            //Add error to the respective control-group
             $('#connect-nick').closest('.control-group').addClass('error');
         }
 
@@ -76,7 +89,6 @@ var MainView = Backbone.View.extend({
                 secure: secure,
                 selfSigned: selfSigned,
                 rejoin: rejoin,
-                away: away,
                 realName: realName,
                 password: password,
                 encoding: encoding,
@@ -84,7 +96,7 @@ var MainView = Backbone.View.extend({
             };
 
             irc.me = new User(connectInfo);
-            irc.me.on('change:nick', irc.appView.renderUserBox);
+            irc.me.on('change:nick', irc.appView.renderUserBox); //Useful for nick command
             irc.socket.emit('connect', connectInfo);
         }
     },
@@ -109,7 +121,7 @@ var MainView = Backbone.View.extend({
             $('#login-password').addClass('error');
         }
 
-        if(username && password){
+        if (username && password) {
             $('form').append(_.template($("#load_image").html()));
             $('#login-button').addClass('disabled');
         }
@@ -136,7 +148,7 @@ var MainView = Backbone.View.extend({
             $('#register-password').addClass('error');
         }
 
-        if(username && password){
+        if (username && password) {
             $('form').append(_.template($("#load_image").html()));
             $('#register-button').addClass('disabled');
         }

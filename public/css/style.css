@@ -7,6 +7,10 @@
 
 html { overflow: hidden; }
 
+.typeahead {
+    margin-top: -200px !important; /*BOOTSTRAP Override (To make typeahead dropdown ABOVE the input box*/
+}
+
 .container-fluid {
     min-height: 100%;
     width: 100%;
@@ -86,7 +90,7 @@ html { overflow: hidden; }
 }
 
 #mainview ul li:hover {
-    background: #A7DBD8;
+    background: #FFB739;
     cursor: pointer;
     border-radius: 5px;
 }
@@ -379,7 +383,6 @@ html { overflow: hidden; }
     width: 100%;
 }
 
-
 .userlist_user_info{
     display: table-cell;
     width: 87%;
@@ -393,8 +396,6 @@ html { overflow: hidden; }
     text-overflow: ellipsis;
 }
 
-.userlist_user_time{
+.userlist_user_buttons {
     margin-left: 5px;
-    color: #666666;
 }
-

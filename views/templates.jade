@@ -1,16 +1,21 @@
-script(id="main_application", type="text/x-underscore-template")
+//- http://stackoverflow.com/questions/8540720/comments-in-jade
+//- Invisible comments
+
+script(id="main", type="text/x-underscore-template")
+    // PrashFour by Christopher Dufour and Samuel Prashker
     .sidebar
         h2 PrashFour
         #user-box
         #channels
         #hint-box.text-center
             h4 Hint-Box 
-                a(href="#") /join
-                a(href="#") /part
-                a(href="#") /nick
-                a(href="#") /topic
-                a(href="#") /me
-                
+            button.btn.btn-success /join
+            button.btn.btn-success /part
+            button.btn.btn-success /nick
+            button.btn.btn-success /topic
+            button.btn.btn-success /me        
+            button.btn.btn-success /whois
+            button.btn.btn-info /ping
     .content
     
 script(id="load_image", type="text/x-underscore-template")
@@ -85,27 +90,6 @@ script(id="mainview_connection", type="text/x-underscore-template")
                         i.icon-book
                     select#connect-encoding Encoding
                         option(value="", selected="selected") UTF-8
-                        option(disabled="disabled") --------------
-                        option(value="ISO-8859-1") ISO-8859-1
-                        option(value="ISO-8859-15") ISO-8859-15
-                        option(value="ISO-8859-2") ISO-8859-2
-                        option(value="ISO-8859-7") ISO-8859-7 (Greek)
-                        option(value="ISO-8859-8") ISO-8859-8 (Hebrew)
-                        option(value="ISO-8859-9") ISO-8859-9 (Turkish)
-                        option(value="ISO-8859-11") ISO-8859-11 (Thai)
-                        option(disabled="disabled") --------------
-                        option(value="ISO-2022-JP") ISO-2022-JP (Japanese)
-                        option(value="CP949") CP949 (Korean)
-                        option(value="EUC-KR") EUC-KR (Korean)
-                        option(value="GBK") GBK (Chinese)
-                        option(value="GB18030") GB18030 (Chinese)
-                        option(value="BIG5") BIG5 (Chinese)
-                        option(disabled="disabled") --------------
-                        option(value="KOI8-U") KOI8-U (Ukrainian)
-                        option(value="KOI8-R") KOI8-R (Cyrillic)
-                        option(value="CP1251") CP1251 (Cyrillic)
-                        option(value="CP1256") CP1256 (Arabic)
-                        option(value="CP1257") CP1257 (baltic)
         .control-group
             .input-prepend
                 <% if (loggedIn) { %>
@@ -162,8 +146,8 @@ script(id="chat", type="x-underscore-template")
             #chat-contents.bar
             #input-container.bar
                 .input
-                    input#chat-input
-                    a#chat-button.btn.btn-primary.disabled Send
+                    input#chat-input(autocomplete="off")
+                    a#chat-button.btn.btn-primary Send
         #user-window
             #user-bar.bar
                 .titlebar
@@ -189,7 +173,10 @@ script(id="user_box", type="text/x-underscore-template")
 
 script(id="userlist_user", type="text/x-underscore-template")
     div.userlist_user_info
-        div.userlist_user_name <%=role%><%=nick%>
+        div.userlist_user_name <%=prefix%><%=nick%>
+            span.userlist_user_buttons
+                button.btn.btn-info.pmbutton PM
+                button.btn.btn-success.whoisbutton WHOIS
 
 script(id="action-message", type="text/x-underscore-template")
     .chat_action
@@ -215,11 +202,11 @@ script(id="message", type="text/x-underscore-template")
         span <%=timeStamp%>
 
 script(id="joinpart-message", type="text/x-underscore-template")
-    
-    span(class="{{type}}_img")
-    span <b><%=nick%></b> <%=action%> the channel <%=reason%> <%=message%>
+    i.icon-exclamation-sign
+    span <b><%=nick%></b> <%=action%> the channel <%=reason%>
 
 script(id="nickchange-message", type="text/x-underscore-template")
+    i.icon-wrench
     span <b><%=oldNick%></b> is now known as <%=newNick%>
 
 script(id="alert", type="text/x-underscore-template")

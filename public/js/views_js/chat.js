@@ -27,69 +27,59 @@ var ChatView = Backbone.View.extend({
         );
         this.updateTitle();
         this.handleInput();
-        this.handleScroll();
-        this.handleClick();
         $('#chat-input').focus();
+
         return this;
     },
 
     handleInput: function() {
-        $('#chat-button').click( function(){
-            var message = $('#chat-input').val();
-                if (message.substr(0, 1) === '/') {
-                    var commandText = message.substr(1).split(' ');
-                    irc.commands.handle(commandText);
-                } 
-                else {
-                    irc.socket.emit('say', {target: irc.chatWindows.getActive().get('name'), message:message});
+        var that = this;
+        
+        //Typeahead for Nicks
+        //http://stackoverflow.com/questions/12272680/jquery-bootstrap-updating-a-typeahead-after-events-removed-from-input
+        $('#chat-input').off();
+        $('#chat-input').data('typeahead', (data = null));
+        $('#chat-input').typeahead({
+            //first result in array is undefined, skip it
+            source: (irc.chatWindows.getActive().userList ? _.rest(_.toArray(irc.chatWindows.getActive().userList.getUsersNameArray()), 1) : []),
+            
+            matcher: function (item) {
+                if (item.toLowerCase().indexOf(this.query.toLowerCase()) == 0) {
+                    return true;
                 }
-            $('#chat-input').val('');
-        });
-     
-        var keydownEnter = false;
-        $('#chat-input').bind({
-            // Enable button if there's any input
-            change: function() {
-                if ($(this).val().length) {
-                    $('#chat-button').removeClass('disabled');
-                } 
                 else {
-                    $('#chat-button').addClass('disabled');
+                    return false;
                 }
-            },
-
-            // Prevent tab moving focus for tab completion
-            keydown: function(event) {
-                keydownEnter = (event.keyCode === 13);
-            },
-
-            keyup: function(event) {
-                var self = this;
-                if ($(this).val().length) {
-                    if (keydownEnter && event.keyCode === 13) {
-                        var message = $(this).val();
-                        // Handle IRC commands
-                        if (message.substr(0, 1) === '/') {
-                        var commandText = message.substr(1).split(' ');
-                        irc.commands.handle(commandText);
-                        } 
-                        else {
-                            // Send the message
-                            irc.socket.emit('say', {target: irc.chatWindows.getActive().get('name'), message:message});
-                        }
-                        $(this).val('');
-                        $('#chat-button').addClass('disabled');
-                    }
-                    else {
-                        $('#chat-button').removeClass('disabled');
-                    }
-                } 
-                else {
-                    $('#chat-button').addClass('disabled');
-                }
-                isEnter = false;
             }
         });
+        
+        $('#chat-button').click( function(){
+            that.handleMessage();
+        });
+     
+        $('#chat-input').bind({
+            keydown: function(event) {
+                if (event.keyCode === 13) {
+                    that.handleMessage();
+                }
+            }
+        });
+        
+
+    },
+    
+    handleMessage: function () {
+        var message = $('#chat-input').val();
+        if (message.length) {
+            if (message.substr(0, 1) === '/') {
+                var command = message.split(' ');
+                irc.commandHandle(command);
+            } 
+            else {
+                irc.socket.emit('say', {target: irc.chatWindows.getActive().get('name'), message:message});
+            }
+            $('#chat-input').val('');
+        }
     },
 
     addMessage: function(msg) {
@@ -98,16 +88,9 @@ var ChatView = Backbone.View.extend({
         var sender = msg.get('sender');
         var type = msg.get('type');
 
-        var nicksToIgnore = ['', 'notice', 'status'];
-
-        if (nicksToIgnore.indexOf(sender) === -1 && type === 'message'){
-            var user = this.model.userList.getByNick(sender);
-            var element = $(user.view.el);
-            element.prependTo(element.parent());
-        }
-
         $chatWindow.append(view.el);
 
+        //If me and message or PM add message-me
         if (sender === irc.me.get('nick') && ['message', 'pm'].indexOf(type) !== -1) {
             $(view.el).addClass('message-me');
         }
@@ -126,12 +109,4 @@ var ChatView = Backbone.View.extend({
             }
         }
     },
-
-    handleScroll: function() {
-        //For later, maybe
-    },
-
-    handleClick: function() {
-        //For later, maybe
-    }
 });
