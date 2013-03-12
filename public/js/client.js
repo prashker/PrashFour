@@ -8,11 +8,14 @@
 //= require 'utils.js'
 //= require 'models.js'
 //= require 'collections.js'
+//= require 'router.js'
 //= require_tree 'views_js'
 
 
 window.irc = {
-    socket: io.connect(null, {port: PORT}),
+    //From 
+    //https://github.com/LearnBoost/socket.io-client/issues/251#issuecomment-2283801
+    socket: io.connect(null, {'force new connection': true, port: PORT}),
     chatWindows: new WindowList(),
     connected: false,
     loggedIn: false
@@ -23,22 +26,32 @@ window.irc = {
 $(function() {
     irc.appView = new ChatApplicationView();
 
-
     //https://groups.google.com/forum/?fromgroups=#!searchin/socket_io/latency/socket_io/66oeLfcq_1I/Hv2D6U0F5qAJ
-    setInterval(function() {
-        emitTime = Date.now();
-        irc.socket.emit('latencyPING', {});
-    }, 3000);
     irc.socket.on('latencyPONG', function() {
-        console.log('Latency (round-trip time): ' + (Date.now() - emitTime) + 'ms');
-    });    
+        irc.lastLatency = Date.now() - irc.lastEmit;     
+        setTimeout(function() {
+            irc.lastEmit = Date.now();
+            irc.socket.emit('latencyPING', {});
+        }, 1000);
+    });
+       
+    irc.lastLatency = 0;
+    irc.lastEmit = Date.now();
+    irc.socket.emit('latencyPING', {});
+
+    irc.socket.emit('getDatabaseState', {});
+    irc.socket.on('databaseState', function(data) {
+        if(data.state === 0){
+            $('#login, #register').hide();
+        }
+    });
 
     // Registration (server joined)
     irc.socket.on('registered', function(data) {
         var window = irc.chatWindows.getByName('status');
         irc.socket.emit('getNick', {});
         irc.connected = true;
-        if(window === undefined){
+        if (window === undefined) {
             irc.appView.render();
             irc.chatWindows.add({name: 'status', type: 'status'});
         } else {
@@ -49,11 +62,68 @@ $(function() {
         irc.me.set('nick', data.message.args[0]);
     });
 
+    irc.socket.on('login_success', function(data) {
+        window.irc.loggedIn = true;
+        if (data.establishedConnectionExists) {
+            //Connect back to established connection
+            irc.socket.emit('connect', {});
+        } else {
+            //Load the connection dialog mainview_connection
+            irc.appView.mainview.render({currentTarget: {id: "connection"}});
+        }
+    });
+
     irc.socket.on('disconnect', function() {
         alert('You were disconnected from the server.');
         $('.container-fluid').css('opacity', '0.5');
     });
 
+
+    irc.socket.on('register_success', function(data) {
+        window.irc.loggedIn = true;
+        irc.appView.mainview.render({currentTarget: {id: "connection"}});
+    });
+
+    irc.socket.on('restore_connection', function(data) {
+        irc.me = new User({nick: data.nick, server: data.server});
+        irc.connected = true;
+        irc.appView.render();
+        irc.appView.renderUserBox();
+        irc.chatWindows.add({name: 'status', type: 'status'});
+        $.each(data.channels, function(key, value) {
+            var chanName = value.serverName.toLowerCase();
+            if (chanName[0] == '#') {
+                irc.chatWindows.add({name: chanName, initial: true});
+            } 
+            else {
+                irc.chatWindows.add({name: chanName, type: 'pm', initial: true});
+            }
+            
+            var channel = irc.chatWindows.getByName(chanName);
+            var channelTabs = irc.appView.channelList.channelTabs;
+            var channelTab = channelTabs[channelTabs.length-1];
+            channel.set({
+                topic: value.topic,
+                unread: 0,
+                unreadHighlights: 0
+            });
+            
+            channelTab.updateUnreadCounts();
+            if (chanName[0] == '#') {
+                channel.userList = new UserList(channel);
+                $.each(value.users, function(user, prefix) {
+                    channel.userList.add(new User({nick: user, prefix: prefix}));
+                });
+                irc.socket.emit('getOldMessages',{channelName: chanName, skip:0, amount: 50});
+            } 
+            else {
+                irc.socket.emit('getOldMessages',{channelName: chanName, skip:0, amount: 50});
+                channel.stream.add(new Message({sender:'', raw:''}));
+            }
+        });
+
+        $('.channel:first').click();
+    });
 
     irc.socket.on('notice', function(data) {
         var status = irc.chatWindows.getByName('status');
@@ -110,6 +180,7 @@ $(function() {
         var chanName = data.channel.toLowerCase();
         if (data.nick === irc.me.get('nick')) {
             irc.chatWindows.add({name: chanName});
+            irc.socket.emit('getOldMessages', {channelName: chanName, skip:0, amount: 50});
         } 
         else {
             var channel = irc.chatWindows.getByName(chanName);
@@ -117,7 +188,7 @@ $(function() {
                 irc.chatWindows.add({name: chanName});
                 channel = irc.chatWindows.getByName(chanName);
             }
-            channel.userList.add({nick: data.nick, role: data.role});
+            channel.userList.add(new User({nick: data.nick, prefix: data.prefix}));
             var joinMessage = new Message({type: 'join', nick: data.nick});
             channel.stream.add(joinMessage);
         }
@@ -155,25 +226,29 @@ $(function() {
     irc.socket.on('names', function(data) {
         var channel = irc.chatWindows.getByName(data.channel.toLowerCase());
         channel.userList = new UserList(channel);
-        $.each(data.nicks, function(nick, role) {
-            channel.userList.add(new User({nick: nick, role: role}));
+        $.each(data.nicks, function(nick, prefix) {
+            channel.userList.add(new User({nick: nick, prefix: prefix}));
         });
+        //Notify the handleInput method
+        channel.view.handleInput();
     });
 
     irc.socket.on('nick', function(data) {
+        //If it was me
         if (data.oldNick === irc.me.get('nick'))
             irc.me.set('nick', data.newNick);
 
-        var channel = irc.chatWindows.getByName(data.channels[0]);
-        var user = channel.userList.getByNick(data.oldNick);
-        user.set({nick: data.newNick});
-        user.view.render();
-
         // Add nickmessage to all channels
+        // Adjust views
         var nickMessage = new Message({type: 'nick', oldNick: data.oldNick, newNick: data.newNick});
-        for( var i in data.channels ) {
-            channel = irc.chatWindows.getByName(data.channels[i]);
-            channel.stream.add(nickMessage);
+        for (var i in data.channels) {
+            var channel = irc.chatWindows.getByName(data.channels[i]);
+            if (channel) {
+                var userInChannelList = channel.userList.getByNick(data.oldNick); //Get the user from the channel userList
+                userInChannelList.set({nick: data.newNick}); //Change the nick value
+                userInChannelList.view.render(); //Rerender it
+                channel.stream.add(nickMessage);
+            }
         }
         
     });
@@ -216,22 +291,49 @@ $(function() {
 
         // move to main view
         irc.appView.render();
-    });
 
+        // remove login and register button if no database
+        irc.socket.emit('getDatabaseState', {});
+    });
+    
+    irc.socket.on('whois', function(data) {
+        //RESPONSE FORMAT
+        /*
+            {
+                nick: "Ned",
+                user: "martyn",
+                host: "10.0.0.18",
+                realname: "Unknown",
+                channels: ["@#purpledishwashers", "#blah", "#mmmmbacon"],
+                server: "*.dollyfish.net.nz",
+                serverinfo: "The Dollyfish Underworld",
+                operator: "is an IRC Operator"
+            }
+        */
+        var activeStream = irc.chatWindows.getActive().stream;
+        if (data.info) {
+            for (var whoisKey in data.info) {
+                var message = new Message({sender: "WHOIS", raw: data.info[whoisKey], type: 'whois'});
+                activeStream.add(message);
+            }
+        }
+        
+    });      
+      
     irc.socket.on('oldMessages', function(data){
         var output = '';
         channel = irc.chatWindows.getByName(data.name);
 
         if (data.messages) {
-            $.each(data.messages.reverse(), function(index, message){
-                if($('#' + message._id).length) {
+            $.each(data.messages.reverse(), function(index, message){                
+                if ($('#' + message._id).length) {
                     return true; //continue to next iteration
                 }
 
                 var type = '';
-                var message_html;
+                var oldmessage_html;
                 if (message.message.substr(1, 6) === 'ACTION') {
-                    message_html = _.template($("#action-message").html(), {
+                    oldmessage_html = _.template($("#action-message").html(), {
                         user: message.user,
                         content: message.message.substr(8),
                         timeStamp: moment(message.date).format('ddd MMM D YYYY, h:mmA'),
@@ -239,7 +341,7 @@ $(function() {
                     });
                 } 
                 else {
-                    message_html = _.template($("#message").html(), {
+                    oldmessage_html = _.template($("#message").html(), {
                         user: message.user,
                         content: message.message,
                         timeStamp: moment(message.date).format('ddd MMM D YYYY, h:mmA'),
@@ -248,101 +350,90 @@ $(function() {
                 }
 
 
-                if(message.user == irc.me.get('nick')){
+                if (message.user == irc.me.get('nick')){
                     type = 'message-me';
                 } else {
-                    message_html = utils.highlightCheck(message_html);
+                    oldmessage_html = utils.highlightCheck(oldmessage_html);
                 }
-
-                message_html = utils.linkify(message_html);
-                message_html = '<div class="message-box ' + type + '">' + message_html + '</div>';
-                output += message_html;
+                
+                oldmessage_html = utils.linkify(oldmessage_html);
+                oldmessage_html = '<div class="message-box ' + type + '">' + oldmessage_html + '</div>';
+                output += oldmessage_html;
             });
         }
-
-
-    });
-
-
-
-    //Constructor Invocation Pattern (AHHHH GET OUT MY HEAD)
-    irc.commands = (function(){
-        var commandStore = {
         
-        };
+        channel.view.$('#chat-contents').prepend(output);
 
-        that = {
-            add: function(name, handler) {
-                commandStore[name] = {
-                  handler: handler,
-                };
-            },
+    });
 
-            handle: function(args){
-                var command = args[0];
-                var handler = commandStore[command] && commandStore[command].handler;
 
-                args.splice(0, 1);
-
-                if (typeof(handler) === 'function'){
-                  handler(args, command);
+    irc.commandHandle = function (command) {
+        switch (command[0]) {
+        
+            case '/join':
+                irc.socket.emit('join', command[1]);
+                break;
+            
+            case '/part':
+                //If a channel name was specified
+                if (command[1]) {
+                  irc.socket.emit('part', command[1]);
+                  irc.appView.channelList.channelTabs[0].setActive(); //Set STATUS (FIX THIS) as Active
+                } 
+                //If not part the active channel
+                else {
+                  irc.socket.emit('part', irc.chatWindows.getActive().get('name'));
+                  irc.appView.channelList.channelTabs[0].setActive(); //Set STATUS (FIX THIS) as Active
                 }
-            }
-        };
-
-        return that;
-    }());
-
-    irc.commands.add('join', function(args){
-        irc.socket.emit('join', args[0]);
-    });
-
-    irc.commands.add('part', function(args) {
-        if (args[0]) {
-          irc.socket.emit('part', args[0]);
-          irc.appView.channelList.channelTabs[0].setActive();
-        } else {
-          irc.socket.emit('part', irc.chatWindows.getActive().get('name'));
-          irc.appView.channelList.channelTabs[0].setActive();
+                break;
+                
+            case '/nick':
+                if (command[1]) {
+                    irc.socket.emit('nick', {newNick: command[1]});
+                }
+                break;
+            
+            case '/topic':
+                //Change active topic (obviously won't work if you don't have permissions)
+                irc.socket.emit('topic', {
+                    name: irc.chatWindows.getActive().get('name'),
+                    topic: command.splice(1).join(' '),
+                });
+                break;
+                
+            case '/me': 
+                //Action command (fun stuff)
+                irc.socket.emit('action', {
+                    target: irc.chatWindows.getActive().get('name'),
+                    message: command.splice(1).join(' '),
+                });
+                break;
+            
+            case '/query': 
+                //Open a private message with a user
+                var nick = command[1].toLowerCase();
+                if (typeof irc.chatWindows.getByName(nick) === 'undefined') {
+                    irc.chatWindows.add({name: nick, type: 'pm'});
+                }
+                irc.socket.emit('getOldMessages', {channelName: nick, skip:0, amount: 50});
+                break;
+                
+            case '/whois':
+                var nick = command[1].toLowerCase();
+                irc.socket.emit('whois', {nick: nick});
+                break;
+                
+            case '/ping': 
+                var activeStream = irc.chatWindows.getActive().stream;
+                var message = new Message({sender: "ping", raw: "Latency: " + irc.lastLatency + " ms", type: 'ping'});
+                activeStream.add(message);
+                break;
+                
+            default:
+                console.log("Unhandled command");
+                break;
         }
-    });
-
-    irc.commands.add('nick', function(args){
-        if (args[0]) {
-            irc.socket.emit('nick', {nick : args[0]});
-        }
-    });
-
-    irc.commands.add('topic', function(args){
-        // If args[0] starts with # or &, a topic name has been provided
-        if (args[0].indexOf('#') === 0 || args[0].indexOf('&') === 0) {
-            irc.socket.emit('topic', {name: args.shift(), topic: args.join(' ')});
-        } else { // Otherwise, assume we're changing the current channel's topic
-            irc.socket.emit('topic', {
-                name: irc.chatWindows.getActive().get('name'), 
-                topic: args.join(' ')
-            });
-        }
-    });
-
-    irc.commands.add('me', function(args){
-        irc.socket.emit('action', {
-            target: irc.chatWindows.getActive().get('name'),
-            message: args.join(" ")
-        });
-    });
-
-    irc.commands.add('query', function(args){
-        var target = args[0].toLowerCase();
-        var myNick = irc.me.get('nick');
-        if (typeof irc.chatWindows.getByName(target) === 'undefined') {
-            irc.chatWindows.add({name: target, type: 'pm'});
-        }
-        irc.socket.emit('say', {
-            target: target,
-            message: args.splice(1).join(" ")
-        });
-    });
+    }
 
 });
 
