@@ -8,7 +8,8 @@ var ChannelTabView = Backbone.View.extend({
 
     initialize: function() {
         this.model.stream.bind('add', this.updateUnreadCounts, this);
-        this.model.bind('destroy', this.switchAndRemove, this).bind('change:active', this.removeUnread, this);
+        this.model.bind('destroy', this.switchAndRemove, this);
+        this.model.bind('change:active', this.removeUnread, this);
     },
 
     render: function() {
@@ -18,16 +19,18 @@ var ChannelTabView = Backbone.View.extend({
             notStatus: function() {
                 return self.model.get('type') !== 'status';
             },
-            unread: (this.model.get('unread') == 0 ? '' : this.model.get('unread')),
-            unreadHighlights: (this.model.get('unreadHighlights') == 0 ? '' : this.model.get('unreadHighlights'))
+            unread: (this.model.get('unread') == 0 ? '' : this.model.get('unread')), //Make it blank if 0, brand is hidden if ''
+            unreadHighlights: (this.model.get('unreadHighlights') == 0 ? '' : this.model.get('unreadHighlights')) //Make it blank if 0, brand is hidden if ''
         });
-        $(this.el).html(tmpl);
+        this.$el.html(tmpl);
         return this;
     },
 
     setActive: function() {
-        if (!this.model.get('active')) irc.chatWindows.setActive(this.model);
-        $(this.el).addClass('active').siblings().removeClass('active');
+        if (!this.model.get('active')) { 
+            irc.chatWindows.setActive(this.model);
+        }
+        this.$el.addClass('active').siblings().removeClass('active');
         this.removeUnread();
     },
 
@@ -59,12 +62,12 @@ var ChannelTabView = Backbone.View.extend({
     switchAndRemove: function() {
         var $nextTab;
         // Focus on next frame if this one has the focus
-        if ($(this.el).hasClass('active')) {
+        if (this.$el.hasClass('active')) {
             // Go to previous frame unless it's status
-            if ($(this.el).next().length) {
-            $nextTab = $(this.el).next();
+            if (this.$el.next().length) {
+                $nextTab = this.$el.next();
             } else {
-            $nextTab = $(this.el).prev();
+                $nextTab = this.$el.prev();
             }
         }
         this.remove();

@@ -1,14 +1,14 @@
 // Collection of messages that belong to a frame
 var Stream = Backbone.Collection.extend({
-  model: Message,
+    model: Message,
 
-  unread: function() {
-    return this.filter(function(msg) { return msg.get('unread'); });
-  },
+    unread: function() {
+        return this.filter(function(msg) { return msg.get('unread'); });
+    },
 
-  unreadHighlights: function() {
-    return this.filter(function(msg) { return msg.get('unreadHighlgihts'); });
-  }
+    unreadHighlights: function() {
+        return this.filter(function(msg) { return msg.get('unreadHighlgihts'); });
+    }
 });
 
 // All channels/private message chats a user has open
@@ -32,23 +32,28 @@ var WindowList = Backbone.Collection.extend({
     },
 
     setActive: function(selected) {
-        //This is here for private messages
         var name = selected.get('name');
-        if ((name[0] !== '#' && name !== 'status') && selected.stream.models.length < 1) {
-            selected.set({active: false});
-            return;
-        }
         this.each(function(chat) {
             chat.set({active: false});
         });
         selected.set({active: true});
         selected.view.render();
+        //Render the chat view
+        
+        if (selected.userList) {
+            selected.userList.each(function(user) { 
+                if (user.has('nick')) {
+                    user.view.rebindEvents();
+                    //Rebind all the per-user options
+                }
+            });
+        }
     },
 
     // Restrict to a certain type of chat window
     byType: function(type) {
         return this.filter(function(chat) {
-        return chat.get('type') === type;
+            return chat.get('type') === type;
         });
     },
 
@@ -58,6 +63,7 @@ var WindowList = Backbone.Collection.extend({
         var pms = this.byType('pm');
 
         var count = 0;
+        //http://stackoverflow.com/questions/7722048/getting-the-sum-of-a-collection-all-models-with-backbone-js
         count = channels.reduce(function(prev, chat) {
           return prev + chat.get('unreadHighlights');
         }, 0);
@@ -99,11 +105,12 @@ var UserList = Backbone.Collection.extend({
         });
     },
 
-    getUsers: function() {
+    getUsersNameArray: function() {
         var users = this.map(function(user) {
             return user.get('nick');
         });
         return users;
     }
+    
 });
 

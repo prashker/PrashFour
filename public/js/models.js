@@ -11,7 +11,8 @@ var Message = Backbone.Model.extend({
             this.set({text: this.get('raw')});
         }
 
-        //Temporary solution to make unread highlights work again
+        //highlightCheck was moved out of models.js to utils.js, this is a highlight fix
+        //check if nick is present in RAW
         if (this.get('type') === 'message' && this.get('raw').search('\\b' + irc.me.get('nick') + '\\b') !== -1) {
             this.set({highlight: true});
         }
@@ -40,7 +41,6 @@ var ChatWindow = Backbone.Model.extend({
     },
 
     initialize: function() {
-        console.log('chat window created');
         this.stream = new Stream();
         this.stream.bind('add', this.setUnread, this);
         this.stream.channel = this;
@@ -48,30 +48,25 @@ var ChatWindow = Backbone.Model.extend({
     },
 
     part: function() {
-        console.log('Leaving ' + this.get('name'));
         this.destroy();
     },
 
     setUnread: function(msg) {
         if (this.get('active')) {
+            //It isn't unread if it is the active window
             return;
         }
-        
-        var sig = false;
         
         // Increment unread messages
         if (msg.get('type') === 'message' || msg.get('type') === 'pm') {
             this.set({unread: this.get('unread') + 1});
         }
         if (this.get('type') === 'pm') { 
-            signal = true;
+            //PM Handler
         }
         if (msg.get('highlight')) {
               this.set({unreadHighlights: this.get('unreadHighlights') + 1});
-              signal = true;
         }
-        // All PMs & Highlights
-        if (sig) this.trigger('forMe', 'message');
     }
 });
 
@@ -81,6 +76,7 @@ var User = Backbone.Model.extend({
     },
 
     defaults: {
-        opStatus: ''
+        nick: "",
+        prefix: ""
     }
 });
