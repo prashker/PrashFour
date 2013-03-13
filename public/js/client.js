@@ -256,7 +256,7 @@ $(function() {
     irc.socket.on('topic', function(data) {
         var channel = irc.chatWindows.getByName(data.channel.toLowerCase());
         channel.set({topic: data.topic});
-        var topicMessage = new Message({type: 'topic', nick: data.nick, topic: utils.linkify(data.topic)});
+        var topicMessage = new Message({type: 'topic', nick: data.nick, topic: utils.unifiedReplace(data.topic)});
         channel.stream.add(topicMessage);
     });
 
@@ -356,7 +356,7 @@ $(function() {
                     oldmessage_html = utils.highlightCheck(oldmessage_html);
                 }
                 
-                oldmessage_html = utils.linkify(oldmessage_html);
+                oldmessage_html = utils.unifiedReplace(oldmessage_html);
                 oldmessage_html = '<div class="message-box ' + type + '">' + oldmessage_html + '</div>';
                 output += oldmessage_html;
             });
