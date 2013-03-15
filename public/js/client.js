@@ -377,13 +377,13 @@ $(function() {
             case '/part':
                 //If a channel name was specified
                 if (command[1]) {
-                  irc.socket.emit('part', command[1]);
-                  irc.appView.channelList.channelTabs[0].setActive(); //Set STATUS (FIX THIS) as Active
+                    irc.socket.emit('part', command[1]);
+                    irc.appView.channelList.channelTabs[0].setActive();
                 } 
                 //If not part the active channel
                 else {
-                  irc.socket.emit('part', irc.chatWindows.getActive().get('name'));
-                  irc.appView.channelList.channelTabs[0].setActive(); //Set STATUS (FIX THIS) as Active
+                    irc.socket.emit('part', irc.chatWindows.getActive().get('name'));
+                    irc.appView.channelList.channelTabs[0].setActive();
                 }
                 break;
                 
