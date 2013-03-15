@@ -24,6 +24,12 @@ window.irc = {
 
 $(function() {
     irc.appView = new ChatApplicationView();
+    
+    //Session Login
+    //http://jsperf.com/localstorage-in-versus-hasownproperty
+    if ('session' in localStorage) {
+        irc.socket.emit('loginBySession', {session: localStorage.getItem('session')});
+    }
 
     //https://groups.google.com/forum/?fromgroups=#!searchin/socket_io/latency/socket_io/66oeLfcq_1I/Hv2D6U0F5qAJ
     irc.socket.on('latencyPONG', function() {
@@ -63,6 +69,7 @@ $(function() {
 
     irc.socket.on('login_success', function(data) {
         window.irc.loggedIn = true;
+        localStorage.setItem('session', data.session);
         if (data.establishedConnectionExists) {
             //Connect back to established connection
             irc.socket.emit('connect', {});
