@@ -399,3 +399,11 @@ html { overflow: hidden; }
 .userlist_user_buttons {
     margin-left: 5px;
 }
+
+.userlist_user_buttons > button {
+    opacity: 0.8;
+}
+
+.userlist_user_buttons > button:hover {
+    opacity: 1;
+}
