@@ -49,11 +49,8 @@ window.utils = {
         return text;
     },
     
-    highlightCheck: function(text) {
-        var escape = function(text) {
-            return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-        };
-        var re = new RegExp(escape(irc.me.get('nick')), 'g');
+    highlightReplace: function(text) {
+        var re = new RegExp(irc.me.get('nick').replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"), 'g');
         var parsed = text.replace(re, function(nick) {
             return '<span class="highlight">' + nick + '</span>';
         });
