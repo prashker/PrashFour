@@ -11,7 +11,6 @@
 //= require 'router.js'
 //= require_tree 'views_js'
 
-
 window.irc = {
     //From 
     //https://github.com/LearnBoost/socket.io-client/issues/251#issuecomment-2283801
@@ -213,7 +212,7 @@ $(function() {
         var channel, user, quitMessage;
         for(var i=0; i<data.channels.length; i++){
             channel = irc.chatWindows.getByName(data.channels[i]);
-            if(channel !== undefined) {
+            if (channel !== undefined) {
                 user = channel.userList.getByNick(data.nick);
                 user.view.remove();
                 user.destroy();
@@ -328,7 +327,7 @@ $(function() {
         channel = irc.chatWindows.getByName(data.name);
 
         if (data.messages) {
-            $.each(data.messages.reverse(), function(index, message){                
+            $.each(data.messages, function(index, message){                
                 if ($('#' + message._id).length) {
                     return true; //continue to next iteration
                 }
