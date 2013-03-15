@@ -22,9 +22,6 @@ var ChatView = Backbone.View.extend({
 
     render: function() {
         $('.content').html(this.el);
-        $('#chat-contents').scrollTop(
-            $('#chat-contents')[0].scrollHeight - $('#chat-contents').height()
-        );
         this.updateTitle();
         this.handleInput();
         $('#chat-input').focus();
@@ -104,6 +101,7 @@ var ChatView = Backbone.View.extend({
         // If the window is large enough to be scrollable
         if (chatWindowHeight > 0) {
             // If the user isn't scrolling go to the bottom message
+            // (If the user is at/near the bottom, auto-scroll)
             if ((chatWindowHeight - $chatWindow.scrollTop()) < 200) {
                 $('#chat-contents').scrollTo(view.el, 200);
             }
