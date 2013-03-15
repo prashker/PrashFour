@@ -235,8 +235,11 @@ $(function() {
 
     irc.socket.on('nick', function(data) {
         //If it was me
-        if (data.oldNick === irc.me.get('nick'))
+        if (data.oldNick === irc.me.get('nick')) {
             irc.me.set('nick', data.newNick);
+            irc.appView.renderUserBox(); //re-render userbox
+        }
+       
 
         // Add nickmessage to all channels
         // Adjust views
