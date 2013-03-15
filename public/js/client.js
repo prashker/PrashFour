@@ -148,7 +148,7 @@ $(function() {
         // Only handle channel messages here; PMs handled separately
         if (data.to.substr(0, 1) === '#') {
             chatWindow.stream.add({sender: data.from, raw: data.text, type: type});
-        } else if(data.to !== irc.me.get('nick')) {
+        } else if (data.to !== irc.me.get('nick')) {
             // Handle PMs intiated by me
             chatWindow.stream.add({sender: data.from.toLowerCase(), raw: data.text, type: 'pm'});
         }
@@ -355,7 +355,7 @@ $(function() {
                 if (message.user == irc.me.get('nick')){
                     type = 'message-me';
                 } else {
-                    oldmessage_html = utils.highlightCheck(oldmessage_html);
+                    oldmessage_html = utils.highlightReplace(oldmessage_html);
                 }
                 
                 oldmessage_html = utils.unifiedReplace(oldmessage_html);

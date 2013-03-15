@@ -11,7 +11,7 @@ var Message = Backbone.Model.extend({
             this.set({text: this.get('raw')});
         }
 
-        //highlightCheck was moved out of models.js to utils.js, this is a highlight fix
+        //highlightReplace was moved out of models.js to utils.js, this is a highlight fix
         //check if nick is present in RAW
         if (this.get('type') === 'message' && this.get('raw').search('\\b' + irc.me.get('nick') + '\\b') !== -1) {
             this.set({highlight: true});
@@ -22,7 +22,7 @@ var Message = Backbone.Model.extend({
         var nick = this.get('sender') || this.collection.channel.get('name');
         var result = utils.unifiedReplace(text);
         if (nick !== irc.me.get('nick')) {
-            result = utils.highlightCheck(result);
+            result = utils.highlightReplace(result);
         }
         return result;
     },
