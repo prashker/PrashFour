@@ -95,7 +95,7 @@ var ChatView = Backbone.View.extend({
         }
 
         if (['join', 'part', 'topic', 'nick', 'quit'].indexOf(type) !== -1) {
-            $(view.el).addClass('message_notification');
+            $(view.el).addClass('message-notification');
         }
 
         // Scroll down to show new message
