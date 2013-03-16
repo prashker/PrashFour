@@ -154,10 +154,10 @@ script(id="chat", type="x-underscore-template")
 
 script(id="channel", type="text/x-underscore-template")
     a(href="#") <%=name%>
-        <% if (notStatus) { %>
-        i.icon-remove.close-button
         span.badge.badge-info.unread-highlights(title="Unread Highlights") <%=unreadHighlights%>
         span.badge.badge-important.unread(title="Unread Messages") <%=unread%>
+        <% if (name != "status") { %>
+        i.icon-remove.close-button
         <% } %>
 
 script(id="user_box", type="text/x-underscore-template")

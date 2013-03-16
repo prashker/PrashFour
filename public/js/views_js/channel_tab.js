@@ -15,11 +15,10 @@ var ChannelTabView = Backbone.View.extend({
 
     render: function() {
         var self = this;
+        console.log("rendering: ");
+        console.log(this.model);
         var tmpl = _.template($("#channel").html(), {
             name: this.model.get('name'),
-            notStatus: function() {
-                return self.model.get('type') !== 'status';
-            },
             unread: (this.model.get('unread') == 0 ? '' : this.model.get('unread')), //Make it blank if 0, brand is hidden if ''
             unreadHighlights: (this.model.get('unreadHighlights') == 0 ? '' : this.model.get('unreadHighlights')) //Make it blank if 0, brand is hidden if ''
         });
