@@ -1,5 +1,6 @@
 var ChannelTabView = Backbone.View.extend({
     className: 'channel',
+    tagName: 'li',
 
     events: {
         'click': 'setActive',

@@ -1,5 +1,5 @@
 var ChatApplicationView = Backbone.View.extend({
-    className: 'container-fluid',
+    className: 'backboneAllWrap',
     originalTitle: document.title,
     
     events: {
