@@ -41,9 +41,9 @@ var ChatWindow = Backbone.Model.extend({
     },
 
     initialize: function() {
-        this.stream = new Stream();
-        this.stream.bind('add', this.setUnread, this);
-        this.stream.channel = this;
+        this.messageList = new MessageList();
+        this.messageList.bind('add', this.setUnread, this);
+        this.messageList.channel = this;
         this.view = new ChatView({model: this});
     },
 
