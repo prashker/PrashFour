@@ -3,11 +3,12 @@ var ChatApplicationView = Backbone.View.extend({
     originalTitle: document.title,
     
     events: {
-        'click #hint-box button' : 'hintBoxButtonClick'
+        'click #nav-quick-buttons button' : 'hintBoxButtonClick'
     },
     
-    hintBoxButtonClick : function() {
-        console.log("A help-text button was clicked");
+    hintBoxButtonClick : function(e) {
+        $('#chat-input').val(e.currentTarget.innerText);
+        $('#chat-input').focus();
     },
 
 
