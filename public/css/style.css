@@ -50,11 +50,10 @@ html {
 /* MAINVIEW STUFF */
 
 #mainview {
-    width: 500px;
+    width: 600px;
     margin-top: 10%;
     margin-right: auto;
     margin-left: auto;
-    margin-bottom: 30%;
     padding: 10px;
     background: #E7E9ED;
     border: 2px solid #DDD;
@@ -85,18 +84,6 @@ html {
 #mainview li span {
     display: block;
     font-weight: bold;
-}
-
-#mainview #home_parent {
-    height: 40px;
-    width: 100%;
-}
-
-#mainview #home {
-    color: black;
-    font-weight: bold;
-    float: right;
-    cursor: pointer;
 }
 
 #user-box {

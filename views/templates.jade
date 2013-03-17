@@ -38,8 +38,7 @@ script(id="mainview_main", type="text/x-underscore-template")
     #mainview.text-center
 
 script(id="mainview_connection", type="text/x-underscore-template")
-    #home_parent
-        a.mainview_button#home Home
+    button.btn.btn-info.mainview_button#home Home
     form.form-horizontal
         .control-group
             .input-prepend
@@ -100,13 +99,11 @@ script(id="mainview_connection", type="text/x-underscore-template")
             a#connect-more-options-button.btn(type="button") More Options
 
 script(id="mainview_settings", type="text/x-underscore-template")
-    #home_parent
-        a.mainview_button#home Home
+    button.btn.btn-info.mainview_button#home Home
     p#settings-soon If there is no ideas here, it will be removed, Chris?
 
 script(id="mainview_login", type="text/x-underscore-template")
-    #home_parent
-        a.mainview_button#home Home
+    button.btn.btn-info.mainview_button#home Home
     form.form-inline
         .control-group
             .input-prepend
@@ -121,8 +118,7 @@ script(id="mainview_login", type="text/x-underscore-template")
     a(id="login-button", class="btn btn-primary", type="submit") Login
 
 script(id="mainview_register", type="text/x-underscore-template")
-    #home_parent
-        a.mainview_button#home Home
+    button.btn.btn-info.mainview_button#home Home
     form.form-inline
         .control-group
             label(for="register-username") Username
