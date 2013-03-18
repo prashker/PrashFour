@@ -63,7 +63,7 @@ var ChannelTabView = Backbone.View.extend({
     switchAndRemove: function() {
         var nextTab;
         // Focus on next frame if this one has the focus
-        if (this.el.hasClass('active')) {
+        if (this.$el.hasClass('active')) {
             // Go to previous frame unless it's status
             if (this.$el.next().length) {
                 nextTab = this.$el.next();
