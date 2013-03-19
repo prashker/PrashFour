@@ -1,13 +1,17 @@
 // Collection of messages that belong to a frame
-var Stream = Backbone.Collection.extend({
+var MessageList = Backbone.Collection.extend({
     model: Message,
 
     unread: function() {
-        return this.filter(function(msg) { return msg.get('unread'); });
+        return this.filter(function(message) { 
+            return message.get('unread'); 
+        });
     },
 
     unreadHighlights: function() {
-        return this.filter(function(msg) { return msg.get('unreadHighlgihts'); });
+        return this.filter(function(message) { 
+            return message.get('unreadHighlgihts'); 
+        });
     }
 });
 

@@ -8,14 +8,14 @@ var ChatView = Backbone.View.extend({
         //When the model's topic changes, bind to the update title of the view
         this.model.bind('change:topic', this.updateTitle, this);
         //Same with adding a message
-        this.model.stream.bind('add', this.addMessage, this);
+        this.model.messageList.bind('add', this.addMessage, this);
     },
 
     updateTitle: function(channel) {
         var topic = this.model.get('topic') || '';
         var context = {
             title: this.model.get('name'),
-            topic: utils.linkify(topic)
+            topic: utils.unifiedReplace(topic)
         };
         this.$('#chat-bar').html(_.template($("#titlebar").html(), context));
     },
@@ -28,7 +28,6 @@ var ChatView = Backbone.View.extend({
         this.updateTitle();
         this.handleInput();
         $('#chat-input').focus();
-
         return this;
     },
 
@@ -82,13 +81,13 @@ var ChatView = Backbone.View.extend({
         }
     },
 
-    addMessage: function(msg) {
-        var $chatWindow = this.$('#chat-contents');
-        var view = new MessageView({model: msg});
-        var sender = msg.get('sender');
-        var type = msg.get('type');
+    addMessage: function(message) {
+        var chatWindow = $('#chat-contents');
+        var view = new MessageView({model: message});
+        var sender = message.get('sender');
+        var type = message.get('type');
 
-        $chatWindow.append(view.el);
+        chatWindow.append(view.el);
 
         //If me and message or PM add message-me
         if (sender === irc.me.get('nick') && ['message', 'pm'].indexOf(type) !== -1) {
@@ -96,16 +95,17 @@ var ChatView = Backbone.View.extend({
         }
 
         if (['join', 'part', 'topic', 'nick', 'quit'].indexOf(type) !== -1) {
-            $(view.el).addClass('message_notification');
+            $(view.el).addClass('message-notification');
         }
 
+        //As the TA mentioned - now scrolling done on new message
         // Scroll down to show new message
-        var chatWindowHeight = ($chatWindow[0].scrollHeight - $chatWindow.height());
+        var chatWindowHeight = (chatWindow[0].scrollHeight - chatWindow.height());
         // If the window is large enough to be scrollable
         if (chatWindowHeight > 0) {
             // If the user isn't scrolling go to the bottom message
-            if ((chatWindowHeight - $chatWindow.scrollTop()) < 200) {
-                $('#chat-contents').scrollTo(view.el, 200);
+            if ((chatWindowHeight - chatWindow.scrollTop()) < 250) {
+                $('#chat-contents').scrollTo(view.el, 250);
             }
         }
     },

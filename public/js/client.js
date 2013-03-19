@@ -11,7 +11,6 @@
 //= require 'router.js'
 //= require_tree 'views_js'
 
-
 window.irc = {
     //From 
     //https://github.com/LearnBoost/socket.io-client/issues/251#issuecomment-2283801
@@ -25,6 +24,12 @@ window.irc = {
 
 $(function() {
     irc.appView = new ChatApplicationView();
+    
+    //Session Login
+    //http://jsperf.com/localstorage-in-versus-hasownproperty
+    if ('session' in localStorage) {
+        irc.socket.emit('loginBySession', {session: localStorage.getItem('session')});
+    }
 
     //https://groups.google.com/forum/?fromgroups=#!searchin/socket_io/latency/socket_io/66oeLfcq_1I/Hv2D6U0F5qAJ
     irc.socket.on('latencyPONG', function() {
@@ -64,6 +69,7 @@ $(function() {
 
     irc.socket.on('login_success', function(data) {
         window.irc.loggedIn = true;
+        localStorage.setItem('session', data.session);
         if (data.establishedConnectionExists) {
             //Connect back to established connection
             irc.socket.emit('connect', {});
@@ -118,7 +124,7 @@ $(function() {
             } 
             else {
                 irc.socket.emit('getOldMessages',{channelName: chanName, skip:0, amount: 50});
-                channel.stream.add(new Message({sender:'', raw:''}));
+                channel.messageList.add(new Message({sender:'', raw:''}));
             }
         });
 
@@ -134,13 +140,13 @@ $(function() {
             status = irc.chatWindows.getByName('status');
         }
         var sender = (data.nick !== undefined) ? data.nick : 'notice';
-        status.stream.add({sender: sender, raw: data.text, type: 'notice'});
+        status.messageList.add({sender: sender, raw: data.text, type: 'notice'});
     });
 
     // Message of the Day
     irc.socket.on('motd', function(data) {
         var message = new Message({sender: 'status', raw: data.motd, type: 'motd'});
-        irc.chatWindows.getByName('status').stream.add(message);
+        irc.chatWindows.getByName('status').messageList.add(message);
     });
 
     irc.socket.on('message', function(data) {
@@ -148,10 +154,10 @@ $(function() {
         var type = 'message';
         // Only handle channel messages here; PMs handled separately
         if (data.to.substr(0, 1) === '#') {
-            chatWindow.stream.add({sender: data.from, raw: data.text, type: type});
-        } else if(data.to !== irc.me.get('nick')) {
+            chatWindow.messageList.add({sender: data.from, raw: data.text, type: type});
+        } else if (data.to !== irc.me.get('nick')) {
             // Handle PMs intiated by me
-            chatWindow.stream.add({sender: data.from.toLowerCase(), raw: data.text, type: 'pm'});
+            chatWindow.messageList.add({sender: data.from.toLowerCase(), raw: data.text, type: 'pm'});
         }
     });
     
@@ -160,9 +166,9 @@ $(function() {
         var chatWindow = irc.chatWindows.getByName(data.to.toLowerCase());
         var type = 'message';
         if (data.to.substr(0, 1) === '#') {
-            chatWindow.stream.add({sender: data.from, raw: ' ACTION ' + data.text, type: type});
+            chatWindow.messageList.add({sender: data.from, raw: ' ACTION ' + data.text, type: type});
         } else if(data.to !== irc.me.get('nick')) {
-            chatWindow.stream.add({sender: data.from.toLowerCase(), raw: ' ACTION ' + data.text, type: 'pm'});
+            chatWindow.messageList.add({sender: data.from.toLowerCase(), raw: ' ACTION ' + data.text, type: 'pm'});
         }
     });
 
@@ -173,7 +179,7 @@ $(function() {
             irc.socket.emit('getOldMessages',{channelName: data.nick.toLowerCase(), skip:0, amount: 50});
             chatWindow = irc.chatWindows.getByName(data.nick.toLowerCase());
         }
-        chatWindow.stream.add({sender: data.nick, raw: data.text, type: 'pm'});
+        chatWindow.messageList.add({sender: data.nick, raw: data.text, type: 'pm'});
     });
 
     irc.socket.on('join', function(data) {
@@ -190,7 +196,7 @@ $(function() {
             }
             channel.userList.add(new User({nick: data.nick, prefix: data.prefix}));
             var joinMessage = new Message({type: 'join', nick: data.nick});
-            channel.stream.add(joinMessage);
+            channel.messageList.add(joinMessage);
         }
     });
 
@@ -205,7 +211,7 @@ $(function() {
             user.view.remove();
             user.destroy();
             var partMessage = new Message({type: 'part', nick: data.nick});
-            channel.stream.add(partMessage);
+            channel.messageList.add(partMessage);
         }
     });
 
@@ -213,12 +219,12 @@ $(function() {
         var channel, user, quitMessage;
         for(var i=0; i<data.channels.length; i++){
             channel = irc.chatWindows.getByName(data.channels[i]);
-            if(channel !== undefined) {
+            if (channel !== undefined) {
                 user = channel.userList.getByNick(data.nick);
                 user.view.remove();
                 user.destroy();
                 quitMessage = new Message({type: 'quit', nick: data.nick, reason: data.reason, message: data.message});
-                channel.stream.add(quitMessage);
+                channel.messageList.add(quitMessage);
             }
         }
     });
@@ -235,8 +241,11 @@ $(function() {
 
     irc.socket.on('nick', function(data) {
         //If it was me
-        if (data.oldNick === irc.me.get('nick'))
+        if (data.oldNick === irc.me.get('nick')) {
             irc.me.set('nick', data.newNick);
+            irc.appView.renderUserBox(); //re-render userbox
+        }
+       
 
         // Add nickmessage to all channels
         // Adjust views
@@ -247,7 +256,7 @@ $(function() {
                 var userInChannelList = channel.userList.getByNick(data.oldNick); //Get the user from the channel userList
                 userInChannelList.set({nick: data.newNick}); //Change the nick value
                 userInChannelList.view.render(); //Rerender it
-                channel.stream.add(nickMessage);
+                channel.messageList.add(nickMessage);
             }
         }
         
@@ -256,8 +265,8 @@ $(function() {
     irc.socket.on('topic', function(data) {
         var channel = irc.chatWindows.getByName(data.channel.toLowerCase());
         channel.set({topic: data.topic});
-        var topicMessage = new Message({type: 'topic', nick: data.nick, topic: utils.linkify(data.topic)});
-        channel.stream.add(topicMessage);
+        var topicMessage = new Message({type: 'topic', nick: data.nick, topic: utils.unifiedReplace(data.topic)});
+        channel.messageList.add(topicMessage);
     });
 
     irc.socket.on('error', function(data) {
@@ -268,7 +277,7 @@ $(function() {
             irc.chatWindows.add({name: 'status', type: 'status'});
             window = irc.chatWindows.getByName('status');
         }
-        window.stream.add({sender: 'error', raw: data.message.args.join(), type: 'notice'});
+        window.messageList.add({sender: 'error', raw: data.message.args.join(), type: 'notice'});
     });
 
     irc.socket.on('netError', function(data) {
@@ -310,11 +319,11 @@ $(function() {
                 operator: "is an IRC Operator"
             }
         */
-        var activeStream = irc.chatWindows.getActive().stream;
+        var activeMessageList = irc.chatWindows.getActive().messageList;
         if (data.info) {
             for (var whoisKey in data.info) {
                 var message = new Message({sender: "WHOIS", raw: data.info[whoisKey], type: 'whois'});
-                activeStream.add(message);
+                activeMessageList.add(message);
             }
         }
         
@@ -325,7 +334,7 @@ $(function() {
         channel = irc.chatWindows.getByName(data.name);
 
         if (data.messages) {
-            $.each(data.messages.reverse(), function(index, message){                
+            $.each(data.messages, function(index, message){                
                 if ($('#' + message._id).length) {
                     return true; //continue to next iteration
                 }
@@ -353,10 +362,10 @@ $(function() {
                 if (message.user == irc.me.get('nick')){
                     type = 'message-me';
                 } else {
-                    oldmessage_html = utils.highlightCheck(oldmessage_html);
+                    oldmessage_html = utils.highlightReplace(oldmessage_html);
                 }
                 
-                oldmessage_html = utils.linkify(oldmessage_html);
+                oldmessage_html = utils.unifiedReplace(oldmessage_html);
                 oldmessage_html = '<div class="message-box ' + type + '">' + oldmessage_html + '</div>';
                 output += oldmessage_html;
             });
@@ -377,13 +386,13 @@ $(function() {
             case '/part':
                 //If a channel name was specified
                 if (command[1]) {
-                  irc.socket.emit('part', command[1]);
-                  irc.appView.channelList.channelTabs[0].setActive(); //Set STATUS (FIX THIS) as Active
+                    irc.socket.emit('part', command[1]);
+                    irc.appView.channelList.channelTabs[0].setActive();
                 } 
                 //If not part the active channel
                 else {
-                  irc.socket.emit('part', irc.chatWindows.getActive().get('name'));
-                  irc.appView.channelList.channelTabs[0].setActive(); //Set STATUS (FIX THIS) as Active
+                    irc.socket.emit('part', irc.chatWindows.getActive().get('name'));
+                    irc.appView.channelList.channelTabs[0].setActive();
                 }
                 break;
                 
@@ -424,9 +433,9 @@ $(function() {
                 break;
                 
             case '/ping': 
-                var activeStream = irc.chatWindows.getActive().stream;
+                var activeMessageList = irc.chatWindows.getActive().messageList;
                 var message = new Message({sender: "ping", raw: "Latency: " + irc.lastLatency + " ms", type: 'ping'});
-                activeStream.add(message);
+                activeMessageList.add(message);
                 break;
                 
             default:
