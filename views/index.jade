@@ -1,4 +1,13 @@
-extends layout
-
-block content
-    p If you are reading this, it means you're either reading the source code of the page, or Jade screwed something up....this should be dynamically replaced by Backbone
+!!! 5
+html
+    head
+        title PrashFour
+        != css('bootstrap.min')
+        link(href='/css/font-awesome.min.css', rel='stylesheet', type='text/css')
+        != css('style')
+        script
+            var PORT = "#{port}";
+        != js('client')
+        include templates
+    body
+        p If you are reading this, it means you're either reading the source code of the page, or Jade screwed something up....this should be dynamically replaced by Backbone via $('body') command in application.js (view)
