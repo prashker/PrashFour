@@ -35,13 +35,7 @@ var ChatApplicationView = Backbone.View.extend({
 
     // Net connection error
     showError: function(text) {
-        $('#loading_image').remove();
-        $('.btn').removeClass('disabled');
-        $('#home_parent .alert').remove();
-        $('#home_parent').after(_.template($("#alert").html(),{
-            type: 'alert-error',
-            content: text
-        }));
+        console.log("ERROR: " + text);
     },
 
     renderUserBox: function() {
