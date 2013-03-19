@@ -87,6 +87,7 @@ $(function() {
 
     irc.socket.on('register_success', function(data) {
         window.irc.loggedIn = true;
+        localStorage.setItem('session', data.session);
         irc.appView.mainview.render({currentTarget: {id: "connection"}});
     });
 
