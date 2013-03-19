@@ -1,5 +1,6 @@
 var ChannelTabView = Backbone.View.extend({
     className: 'channel',
+    tagName: 'li',
 
     events: {
         'click': 'setActive',
@@ -7,7 +8,7 @@ var ChannelTabView = Backbone.View.extend({
     },
 
     initialize: function() {
-        this.model.stream.bind('add', this.updateUnreadCounts, this);
+        this.model.messageList.bind('add', this.updateUnreadCounts, this);
         this.model.bind('destroy', this.switchAndRemove, this);
         this.model.bind('change:active', this.removeUnread, this);
     },
@@ -16,9 +17,6 @@ var ChannelTabView = Backbone.View.extend({
         var self = this;
         var tmpl = _.template($("#channel").html(), {
             name: this.model.get('name'),
-            notStatus: function() {
-                return self.model.get('type') !== 'status';
-            },
             unread: (this.model.get('unread') == 0 ? '' : this.model.get('unread')), //Make it blank if 0, brand is hidden if ''
             unreadHighlights: (this.model.get('unreadHighlights') == 0 ? '' : this.model.get('unreadHighlights')) //Make it blank if 0, brand is hidden if ''
         });
@@ -30,7 +28,10 @@ var ChannelTabView = Backbone.View.extend({
         if (!this.model.get('active')) { 
             irc.chatWindows.setActive(this.model);
         }
+        //Thought bootstrap would take care of this, but...
+        //Cascading functionality to add "active" to the one we just clicked, and deactivate the others (which if everything goes good, should be just one)
         this.$el.addClass('active').siblings().removeClass('active');
+        //Remove the unread messages now that we are able to see the messages
         this.removeUnread();
     },
 
@@ -60,20 +61,18 @@ var ChannelTabView = Backbone.View.extend({
     },
 
     switchAndRemove: function() {
-        var $nextTab;
+        var nextTab;
         // Focus on next frame if this one has the focus
         if (this.$el.hasClass('active')) {
             // Go to previous frame unless it's status
             if (this.$el.next().length) {
-                $nextTab = this.$el.next();
+                nextTab = this.$el.next();
             } else {
-                $nextTab = this.$el.prev();
+                nextTab = this.$el.prev();
             }
         }
         this.remove();
-        if (typeof($nextTab.click) == 'function') {
-            $nextTab.click();
-        }
+        nextTab.click();
     }
 
 });

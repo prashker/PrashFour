@@ -3,7 +3,7 @@ var UserView = Backbone.View.extend({
         this.user = user;
     },
 
-    className: 'userlist_user',
+    className: 'usersList_user',
     
     events : {
         'click .pmbutton' : 'handlePM',

@@ -3,20 +3,22 @@
 
 script(id="main", type="text/x-underscore-template")
     // PrashFour by Christopher Dufour and Samuel Prashker
-    .sidebar
-        h2 PrashFour
-        #user-box
-        #channels
-        #hint-box.text-center
-            h4 Hint-Box 
-            button.btn.btn-success /join
-            button.btn.btn-success /part
-            button.btn.btn-success /nick
-            button.btn.btn-success /topic
-            button.btn.btn-success /me        
-            button.btn.btn-success /whois
-            button.btn.btn-info /ping
-    .content
+    .navbar
+        .navbar-inner
+            a.brand(href="#") PrashFour
+            ul.nav#user-box
+            ul.nav#channels
+            span#nav-quick-buttons
+                button.btn.btn-success /join
+                button.btn.btn-success /part
+                button.btn.btn-success /nick
+                button.btn.btn-success /topic
+                button.btn.btn-success /me        
+                button.btn.btn-success /whois
+                button.btn.btn-info /ping
+                button.btn.btn-info /backlog
+    .wrapper
+        .content
     
 script(id="load_image", type="text/x-underscore-template")
     i.icon-spinner.icon-spin.icon-3x
@@ -26,9 +28,6 @@ script(id="mainview_home", type="text/x-underscore-template")
         li.mainview_button#connection
             i.icon-off
             span New Connection
-        li.mainview_button#settings
-            i.icon-cogs
-            span Settings
         li.mainview_button#login
             i.icon-lock
             span Login
@@ -40,8 +39,7 @@ script(id="mainview_main", type="text/x-underscore-template")
     #mainview.text-center
 
 script(id="mainview_connection", type="text/x-underscore-template")
-    #home_parent
-        a.mainview_button#home Home
+    button.btn.btn-info.mainview_button#home Home
     form.form-horizontal
         .control-group
             .input-prepend
@@ -102,13 +100,11 @@ script(id="mainview_connection", type="text/x-underscore-template")
             a#connect-more-options-button.btn(type="button") More Options
 
 script(id="mainview_settings", type="text/x-underscore-template")
-    #home_parent
-        a.mainview_button#home Home
+    button.btn.btn-info.mainview_button#home Home
     p#settings-soon If there is no ideas here, it will be removed, Chris?
 
 script(id="mainview_login", type="text/x-underscore-template")
-    #home_parent
-        a.mainview_button#home Home
+    button.btn.btn-info.mainview_button#home Home
     form.form-inline
         .control-group
             .input-prepend
@@ -123,8 +119,7 @@ script(id="mainview_login", type="text/x-underscore-template")
     a(id="login-button", class="btn btn-primary", type="submit") Login
 
 script(id="mainview_register", type="text/x-underscore-template")
-    #home_parent
-        a.mainview_button#home Home
+    button.btn.btn-info.mainview_button#home Home
     form.form-inline
         .control-group
             label(for="register-username") Username
@@ -136,7 +131,7 @@ script(id="mainview_register", type="text/x-underscore-template")
 
 script(id="titlebar", type="text/x-underscore-template")
     .titlebar
-        span.window_title(class="window_title") <%=title%>
+        span.window-title <%=title%>
         span#topic <%=topic%>
 
 script(id="chat", type="x-underscore-template")
@@ -155,31 +150,31 @@ script(id="chat", type="x-underscore-template")
             #user-list.bar
 
 script(id="channel", type="text/x-underscore-template")
-    span.channel-name <%=name%>
-    <% if (notStatus) { %>
-    .close-button ×
-    span.badge.badge-important.unread(title="Unread Messages") <%=unread%>
-    span.badge.badge-info.unread-highlights(title="Unread Highlights") <%=unreadHighlights%>
-    <% } %>
+    a(href="#") <%=name%>
+        span.badge.badge-info.unread-highlights <%=unreadHighlights%>
+        span.badge.badge-important.unread <%=unread%>
+        <% if (name != "status") { %>
+        i.icon-remove.close-button
+        <% } %>
 
 script(id="user_box", type="text/x-underscore-template")
-    div.user_box_element
-        i.icon-user.icon-white.spacing-right
-        <%=nick%>
-    div.user_box_element
-        .close-button ×
-        i.icon-asterisk.icon-white.spacing-right
+    li
+        i.icon-user
+        <%=nick%> 
+        i.icon-sitemap
         <%=server%>
+        i.icon-remove.close-button
 
 script(id="userlist_user", type="text/x-underscore-template")
-    div.userlist_user_info
+    div.userlist-user-info
         div.userlist_user_name <%=prefix%><%=nick%>
-            span.userlist_user_buttons
+            span.userlist-user-buttons
                 button.btn.btn-info.pmbutton PM
                 button.btn.btn-success.whoisbutton WHOIS
+                button.btn.btn-danger.pingbutton PING
 
 script(id="action-message", type="text/x-underscore-template")
-    .chat_action
+    .chat-action
         b * <%=user%>&nbsp;
         span <%=content%>
     .chat-time
