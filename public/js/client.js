@@ -105,7 +105,6 @@ $(function() {
             else {
                 irc.chatWindows.add({name: chanName, type: 'pm', initial: true});
             }
-            
             var channel = irc.chatWindows.getByName(chanName);
             var channelTabs = irc.appView.channelList.channelTabs;
             var channelTab = channelTabs[channelTabs.length-1];
@@ -122,7 +121,7 @@ $(function() {
                     channel.userList.add(new User({nick: user, prefix: prefix}));
                 });
                 irc.socket.emit('getOldMessages',{channelName: chanName, skip:0, amount: 50});
-            } 
+            }
             else {
                 irc.socket.emit('getOldMessages',{channelName: chanName, skip:0, amount: 50});
                 channel.messageList.add(new Message({sender:'', raw:''}));
@@ -152,13 +151,12 @@ $(function() {
 
     irc.socket.on('message', function(data) {
         var chatWindow = irc.chatWindows.getByName(data.to.toLowerCase());
-        var type = 'message';
         // Only handle channel messages here; PMs handled separately
         if (data.to.substr(0, 1) === '#') {
-            chatWindow.messageList.add({sender: data.from, raw: data.text, type: type});
+            chatWindow.messageList.add(new Message({sender: data.from, raw: data.text, type: 'message'}));
         } else if (data.to !== irc.me.get('nick')) {
             // Handle PMs intiated by me
-            chatWindow.messageList.add({sender: data.from.toLowerCase(), raw: data.text, type: 'pm'});
+            chatWindow.messageList.add(new Message({sender: data.from.toLowerCase(), raw: data.text, type: 'pm'}));
         }
     });
     
@@ -330,12 +328,11 @@ $(function() {
         
     });      
       
-    irc.socket.on('oldMessages', function(data){
+    irc.socket.on('oldMessages', function(data) {
         var output = '';
-        channel = irc.chatWindows.getByName(data.name);
-
+        var channel = irc.chatWindows.getByName(data.name);
         if (data.messages) {
-            $.each(data.messages, function(index, message){                
+            $.each(data.messages, function(index, message) {                
                 if ($('#' + message._id).length) {
                     return true; //continue to next iteration
                 }
@@ -371,8 +368,8 @@ $(function() {
                 output += oldmessage_html;
             });
         }
-        
-        channel.view.$('#chat-contents').prepend(output);
+        if (channel)
+            channel.view.$('#chat-contents').prepend(output);
 
     });
 

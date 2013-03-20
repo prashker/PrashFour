@@ -6,6 +6,9 @@ var MessageView = Backbone.View.extend({
     },
 
     render: function() {
+        console.log("YEAH!");
+        console.log(this);
+    
         var nick = this.model.get('sender') || this.model.collection.channel.get('name');
         
         var html;
