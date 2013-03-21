@@ -49,6 +49,10 @@ html {
 
 /* MAINVIEW STUFF */
 
+#mainview .mainview-button {
+    margin-bottom: 15px;
+}
+
 #mainview {
     width: 600px;
     margin-top: 10%;
