@@ -8,6 +8,7 @@ var UserView = Backbone.View.extend({
     events : {
         'click .pmbutton' : 'handlePM',
         'click .whoisbutton' : 'handleWHOIS',
+        'click .pingbutton' : 'handlePING',
     },
     
 
@@ -27,6 +28,11 @@ var UserView = Backbone.View.extend({
     
     handleWHOIS: function() {
         irc.commandHandle(["/whois", this.user.model.attributes.nick]);
+    },
+    
+    handlePING: function() {
+        //Cannot ping a client yet
+        irc.commandHandle(["/ping", this.user.model.attributes.nick]);
     }
     
 });

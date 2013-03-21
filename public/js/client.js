@@ -431,9 +431,14 @@ $(function() {
                 break;
                 
             case '/ping': 
-                var activeMessageList = irc.chatWindows.getActive().messageList;
-                var message = new Message({sender: "ping", raw: "Latency: " + irc.lastLatency + " ms", type: 'ping'});
-                activeMessageList.add(message);
+                if (command[1]) {
+                    alert("USER PING NOT IMPLEMENTED (only realized late in the game that it is not handled by node-irc)");
+                }
+                else {
+                    var activeMessageList = irc.chatWindows.getActive().messageList;
+                    var message = new Message({sender: "ping", raw: "Latency: " + irc.lastLatency + " ms", type: 'ping'});
+                    activeMessageList.add(message);
+                }
                 break;
                 
             default:

@@ -101,7 +101,8 @@ var MainView = Backbone.View.extend({
         }
     },
 
-    more_options: function() {
+    more_options: function(e) {
+        e.preventDefault();
         this.$el.find('.connect-more-options').toggleClass('hide');
     },
 
