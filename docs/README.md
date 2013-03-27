@@ -34,8 +34,9 @@ Commands (All commands are typed into the chat box)
  /me: ACTION command (for example /me eats a frog would be outputted *<Nick> eats a frog)
  /query <username>: Opens a query window with username (private messaging)
  /whois <username>: Retrieves the WHOIS information of a user (NOTE: BROKEN BECAUSE NODE-IRC DOES NOT HANDLE AN EVENT PROPERLY, they did not commit a pull request in their repo that fixes it yet)
- /ping: Returns the latency to the Node server from the client (round trip in milliseconds)
+ /ping: Returns the latency to the Node server from the client (round trip in milliseconds) - The server is continually pinged everytime a ping has been returned....inefficient?
  /backlog <num>: Retrieves the <num> messages in the database for the active channel
+ /list: Displays a list in the 'list' channel (via LIST), contains the channel name, topic of the channel, and a join button!
  
 Features
 ===========
