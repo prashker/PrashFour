@@ -35,7 +35,11 @@ var ChatApplicationView = Backbone.View.extend({
 
     // Net connection error
     showError: function(text) {
-        console.log("ERROR: " + text);
+        $.pnotify({
+            title: 'Oh No!',
+            text: text,
+            type: 'error'
+        });
     },
 
     renderUserBox: function() {
