@@ -5,6 +5,7 @@
 //= require 'libs/backbone-min.js'
 //= require 'libs/bootstrap.min.js'
 //= require 'libs/moment.min.js'
+//= require 'libs/jquery.tinyscrollbar.min.js'
 //= require 'utils.js'
 //= require 'models.js'
 //= require 'collections.js'
