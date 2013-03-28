@@ -5,6 +5,8 @@
 //= require 'libs/backbone-min.js'
 //= require 'libs/bootstrap.min.js'
 //= require 'libs/moment.min.js'
+//= require 'libs/jquery.tinyscrollbar.min.js'
+//= require 'libs/jquery.pnotify.min.js'
 //= require 'utils.js'
 //= require 'models.js'
 //= require 'collections.js'
@@ -17,7 +19,13 @@ window.irc = {
     socket: io.connect(null, {'force new connection': true, port: PORT}),
     chatWindows: new WindowList(),
     connected: false,
-    loggedIn: false
+    loggedIn: false,
+    latencyStats: {
+        'lastEmitTime': Date.now(),
+        'lastPing': 0,
+        'totalPing': 0,
+        'numOfPings': 0
+    }
 };
 
 //The main running block, handles all the events the server sends our way
@@ -33,21 +41,23 @@ $(function() {
 
     //https://groups.google.com/forum/?fromgroups=#!searchin/socket_io/latency/socket_io/66oeLfcq_1I/Hv2D6U0F5qAJ
     irc.socket.on('latencyPONG', function() {
-        irc.lastLatency = Date.now() - irc.lastEmit;     
+    
+        irc.latencyStats.lastPing = Date.now() - irc.latencyStats.lastEmitTime;
+        irc.latencyStats.totalPing += irc.latencyStats.lastPing;
+        irc.latencyStats.numOfPings++;
+        
         setTimeout(function() {
-            irc.lastEmit = Date.now();
+            irc.latencyStats.lastEmitTime = Date.now();
             irc.socket.emit('latencyPING', {});
         }, 1000);
     });
-       
-    irc.lastLatency = 0;
-    irc.lastEmit = Date.now();
+    irc.latencyStats.lastEmitTime = Date.now();
     irc.socket.emit('latencyPING', {});
 
-    irc.socket.emit('getDatabaseState', {});
-    irc.socket.on('databaseState', function(data) {
-        if(data.state === 0){
-            $('#login, #register').hide();
+    irc.socket.emit('isDatabaseConnected', {});
+    irc.socket.on('isDatabaseConnected', function(data) {
+        if (data.state == 0) {
+            $('#login, #register').hide(); //Hide the buttons if state = inactive (probably off)
         }
     });
 
@@ -59,7 +69,8 @@ $(function() {
         if (window === undefined) {
             irc.appView.render();
             irc.chatWindows.add({name: 'status', type: 'status'});
-        } else {
+        } 
+        else {
             irc.appView.renderUserBox();
         }
 
@@ -87,6 +98,7 @@ $(function() {
 
     irc.socket.on('register_success', function(data) {
         window.irc.loggedIn = true;
+        localStorage.setItem('session', data.session);
         irc.appView.mainview.render({currentTarget: {id: "connection"}});
     });
 
@@ -104,7 +116,6 @@ $(function() {
             else {
                 irc.chatWindows.add({name: chanName, type: 'pm', initial: true});
             }
-            
             var channel = irc.chatWindows.getByName(chanName);
             var channelTabs = irc.appView.channelList.channelTabs;
             var channelTab = channelTabs[channelTabs.length-1];
@@ -121,7 +132,7 @@ $(function() {
                     channel.userList.add(new User({nick: user, prefix: prefix}));
                 });
                 irc.socket.emit('getOldMessages',{channelName: chanName, skip:0, amount: 50});
-            } 
+            }
             else {
                 irc.socket.emit('getOldMessages',{channelName: chanName, skip:0, amount: 50});
                 channel.messageList.add(new Message({sender:'', raw:''}));
@@ -151,13 +162,13 @@ $(function() {
 
     irc.socket.on('message', function(data) {
         var chatWindow = irc.chatWindows.getByName(data.to.toLowerCase());
-        var type = 'message';
         // Only handle channel messages here; PMs handled separately
         if (data.to.substr(0, 1) === '#') {
-            chatWindow.messageList.add({sender: data.from, raw: data.text, type: type});
-        } else if (data.to !== irc.me.get('nick')) {
+            chatWindow.messageList.add(new Message({sender: data.from, raw: data.text, type: 'message'}));
+        } 
+        else if (data.to !== irc.me.get('nick')) {
             // Handle PMs intiated by me
-            chatWindow.messageList.add({sender: data.from.toLowerCase(), raw: data.text, type: 'pm'});
+            chatWindow.messageList.add(new Message({sender: data.from.toLowerCase(), raw: data.text, type: 'pm'}));
         }
     });
     
@@ -167,7 +178,8 @@ $(function() {
         var type = 'message';
         if (data.to.substr(0, 1) === '#') {
             chatWindow.messageList.add({sender: data.from, raw: ' ACTION ' + data.text, type: type});
-        } else if(data.to !== irc.me.get('nick')) {
+        } 
+        else if (data.to !== irc.me.get('nick')) {
             chatWindow.messageList.add({sender: data.from.toLowerCase(), raw: ' ACTION ' + data.text, type: 'pm'});
         }
     });
@@ -302,7 +314,7 @@ $(function() {
         irc.appView.render();
 
         // remove login and register button if no database
-        irc.socket.emit('getDatabaseState', {});
+        irc.socket.emit('isDatabaseConnected', {});
     });
     
     irc.socket.on('whois', function(data) {
@@ -329,12 +341,11 @@ $(function() {
         
     });      
       
-    irc.socket.on('oldMessages', function(data){
+    irc.socket.on('oldMessages', function(data) {
         var output = '';
-        channel = irc.chatWindows.getByName(data.name);
-
+        var channel = irc.chatWindows.getByName(data.name);
         if (data.messages) {
-            $.each(data.messages, function(index, message){                
+            $.each(data.messages, function(index, message) {                
                 if ($('#' + message._id).length) {
                     return true; //continue to next iteration
                 }
@@ -370,11 +381,28 @@ $(function() {
                 output += oldmessage_html;
             });
         }
-        
-        channel.view.$('#chat-contents').prepend(output);
+        if (channel)
+            channel.view.$('#chat-contents').prepend(output);
 
     });
 
+    irc.socket.on('channellist', function(data) {
+        var window = irc.chatWindows.getByName('list');
+        if (window === undefined) {
+            irc.chatWindows.add({name: 'list', type: 'list'});
+        }
+        
+        console.log("BEEP");
+        console.log(data.channel_list);
+    
+        var listMessageList = irc.chatWindows.getByName('list').messageList;
+        if (listMessageList) {
+            for (var index in data.channel_list) {
+                var message = new Message({sender: data.channel_list[index].name , raw: "Num Users: " + data.channel_list[index].users + " Topic: " + data.channel_list[index].topic , type: 'list'});        
+                listMessageList.add(message);
+            }
+        }
+    });
 
     irc.commandHandle = function (command) {
         switch (command[0]) {
@@ -433,9 +461,18 @@ $(function() {
                 break;
                 
             case '/ping': 
-                var activeMessageList = irc.chatWindows.getActive().messageList;
-                var message = new Message({sender: "ping", raw: "Latency: " + irc.lastLatency + " ms", type: 'ping'});
-                activeMessageList.add(message);
+                if (command[1]) {
+                    alert("USER PING NOT IMPLEMENTED (only realized late in the game that it is not handled by node-irc)");
+                }
+                else {
+                    var activeMessageList = irc.chatWindows.getActive().messageList;
+                    var message = new Message({sender: "ping", raw: "Latest Latency: " + irc.latencyStats.lastPing + " ms - Average over " + irc.latencyStats.numOfPings + " pings: " + (irc.latencyStats.totalPing / irc.latencyStats.numOfPings) + " ms", type: 'ping'});        
+                    activeMessageList.add(message);
+                }
+                break;
+                
+            case '/list':
+                irc.socket.emit('list', {args: command.splice(1)}); //list takes [array of args]
                 break;
                 
             default:

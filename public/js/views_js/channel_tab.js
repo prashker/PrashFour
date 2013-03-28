@@ -25,7 +25,9 @@ var ChannelTabView = Backbone.View.extend({
     },
 
     setActive: function() {
-        if (!this.model.get('active')) { 
+        console.log("setting active: ");
+        console.log(this.model);
+        if (!this.model.get('active')) {
             irc.chatWindows.setActive(this.model);
         }
         //Thought bootstrap would take care of this, but...

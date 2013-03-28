@@ -22,7 +22,7 @@ var MainView = Backbone.View.extend({
         // Navigation to different mainview panes
         $('#mainview').html(_.template($("#mainview_" + (event != undefined ? event.currentTarget.id : 'home')).html(), {'loggedIn': irc.loggedIn}));
 
-        $('.mainview_button').bind('click', function(event) {
+        $('.mainview-button').bind('click', function(event) {
             that.render(event);
         });
         
@@ -101,7 +101,8 @@ var MainView = Backbone.View.extend({
         }
     },
 
-    more_options: function() {
+    more_options: function(e) {
+        e.preventDefault();
         this.$el.find('.connect-more-options').toggleClass('hide');
     },
 

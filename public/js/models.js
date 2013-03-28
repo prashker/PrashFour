@@ -1,8 +1,5 @@
 var Message = Backbone.Model.extend({
     defaults: {
-    // expected properties:
-    // - sender
-    // - raw
         type: 'message'
     },
 

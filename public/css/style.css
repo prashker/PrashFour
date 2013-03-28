@@ -41,13 +41,17 @@ html {
     position: absolute;
 }
 
-.bar {
+.absolute {
     position: absolute;
     left: 0;
     right: 0;
 }
 
 /* MAINVIEW STUFF */
+
+#mainview .mainview-button {
+    margin-bottom: 15px;
+}
 
 #mainview {
     width: 600px;
