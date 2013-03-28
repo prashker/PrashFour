@@ -25,13 +25,13 @@ script(id="load_image", type="text/x-underscore-template")
 
 script(id="mainview_home", type="text/x-underscore-template")
     ul
-        li.mainview_button#connection
+        li.mainview-button#connection
             i.icon-off
             span New Connection
-        li.mainview_button#login
+        li.mainview-button#login
             i.icon-lock
             span Login
-        li.mainview_button#register
+        li.mainview-button#register
             i.icon-group
             span Register
 
@@ -39,7 +39,7 @@ script(id="mainview_main", type="text/x-underscore-template")
     #mainview.text-center
 
 script(id="mainview_connection", type="text/x-underscore-template")
-    button.btn.btn-info.mainview_button#home Home
+    button.btn.btn-info.push-right.mainview-button#home Home
     form.form-horizontal
         .control-group
             .input-prepend
@@ -96,15 +96,15 @@ script(id="mainview_connection", type="text/x-underscore-template")
                 input#connect-keep-alive(type="checkbox")
                 <% } %>
         .control-group
-            a#connect-button.btn.btn-primary.spacing-right(type="button") Connect
-            a#connect-more-options-button.btn(type="button") More Options
+            button#connect-button.btn.btn-primary Connect
+            button#connect-more-options-button.btn More Options
 
 script(id="mainview_settings", type="text/x-underscore-template")
-    button.btn.btn-info.mainview_button#home Home
+    button.btn.btn-info.mainview-button#home Home
     p#settings-soon If there is no ideas here, it will be removed, Chris?
 
 script(id="mainview_login", type="text/x-underscore-template")
-    button.btn.btn-info.mainview_button#home Home
+    button.btn.btn-info.mainview-button#home Home
     form.form-inline
         .control-group
             .input-prepend
@@ -119,7 +119,7 @@ script(id="mainview_login", type="text/x-underscore-template")
     a(id="login-button", class="btn btn-primary", type="submit") Login
 
 script(id="mainview_register", type="text/x-underscore-template")
-    button.btn.btn-info.mainview_button#home Home
+    button.btn.btn-info.mainview-button#home Home
     form.form-inline
         .control-group
             label(for="register-username") Username
@@ -137,17 +137,17 @@ script(id="titlebar", type="text/x-underscore-template")
 script(id="chat", type="x-underscore-template")
     #main-window
         #chat-window
-            #chat-bar.bar
-            #chat-contents.bar
-            #input-container.bar
+            #chat-bar.absolute
+            #chat-contents.absolute
+            #input-container.absolute
                 .input
                     input#chat-input(autocomplete="off")
                     a#chat-button.btn.btn-primary Send
         #user-window
-            #user-bar.bar
+            #user-bar.absolute
                 .titlebar
                     span.window_title User List
-            #user-list.bar
+            #user-list.absolute
 
 script(id="channel", type="text/x-underscore-template")
     a(href="#") <%=name%>

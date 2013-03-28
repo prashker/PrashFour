@@ -48,7 +48,6 @@ var WindowList = Backbone.Collection.extend({
             selected.userList.each(function(user) { 
                 if (user.has('nick')) {
                     user.view.rebindEvents();
-                    //Rebind all the per-user options
                 }
             });
         }
