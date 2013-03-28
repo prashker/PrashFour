@@ -33,21 +33,21 @@ var ChatApplicationView = Backbone.View.extend({
         return this;
     },
 
-    // Net connection error
-    showError: function(text) {
-        $.pnotify({
-            title: 'Oh No!',
-            text: text,
-            type: 'error'
-        });
-    },
-
     renderUserBox: function() {
         $('#user-box').html(_.template($("#user_box").html(),irc.me.toJSON()));
 
         // disconnect server handler
         $('#user-box .close-button').click(function() {
             irc.socket.emit('disconnectServer');
+        });
+    },
+    
+    // Net connection error
+    notifyError: function(title, text) {
+        $.pnotify({
+            title: title,
+            text: text,
+            type: 'error'
         });
     },
 
