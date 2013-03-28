@@ -116,7 +116,7 @@ script(id="mainview_login", type="text/x-underscore-template")
                 span.add-on
                     i.icon-key
                 input#login-password(type="password", placeholder="Password")
-    a(id="login-button", class="btn btn-primary", type="submit") Login
+    button#login-button.btn.btn-primary Login
 
 script(id="mainview_register", type="text/x-underscore-template")
     button.btn.btn-info.mainview-button#home Home
@@ -127,7 +127,7 @@ script(id="mainview_register", type="text/x-underscore-template")
         .control-group
             label(for="register-password") Password
             input#register-password(type="password")
-        a#register-button.btn.btn-primary(type="button") Register
+        button#register-button.btn.btn-primary Register
 
 script(id="titlebar", type="text/x-underscore-template")
     .titlebar

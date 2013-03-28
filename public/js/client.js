@@ -293,15 +293,21 @@ $(function() {
     });
 
     irc.socket.on('netError', function(data) {
-        irc.appView.showError('Invalid server');
+        irc.appView.notifyError('netError', data.message.code);
+    });
+    
+    irc.socket.on('abort', function (data) {
+        $('.icon-spinner').remove();
+        $('#connect-button').removeClass('disabled'); //Make connect button active again
+        irc.appView.notifyError('Abort', "Aborting Connection");
     });
 
     irc.socket.on('login_error', function(data) {
-        irc.appView.showError(data.message);
+        irc.appView.notifyError("Login Error", data.message);
     });
 
     irc.socket.on('register_error', function(data) {
-        irc.appView.showError(data.message);
+        irc.appView.notifyError("Register Error", data.message);
     });
 
     irc.socket.on('reset', function(data) {
