@@ -13,7 +13,8 @@ var ChannelListView = Backbone.View.extend({
 
         var name = chatWindow.get('name');
         var type = chatWindow.get('type');
-        if (name[0] === '#' || name === 'status' || type === 'pm' || name === 'list') {
+        //basically set any new window as active that isn't LIST or a PM (aka the two "unrequested" windows)
+        if (type !== 'pm') {
             view.setActive();
         }
     }
