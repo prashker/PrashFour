@@ -47,7 +47,8 @@ var ChatApplicationView = Backbone.View.extend({
         $.pnotify({
             title: title,
             text: text,
-            type: 'error'
+            type: 'error',
+            animation: 'fade'
         });
     },
     
@@ -55,7 +56,8 @@ var ChatApplicationView = Backbone.View.extend({
         $.pnotify({
             title: title,
             text: text,
-            type: 'success'
+            type: 'success',
+            animation: 'fade'
         });
     },
 
