@@ -451,11 +451,7 @@ $(function() {
         var window = irc.chatWindows.getByName('list');
         if (window === undefined) {
             irc.chatWindows.add({name: 'list', type: 'list'});
-        }
-        
-        console.log("BEEP");
-        console.log(data.channel_list);
-    
+        }    
         var listMessageList = irc.chatWindows.getByName('list').messageList;
         if (listMessageList) {
             for (var index in data.channel_list) {
