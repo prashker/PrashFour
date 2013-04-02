@@ -38,7 +38,7 @@ Files
 * chat_application.js: The wrapper for the whole application, it has a method that replaces the html of $('body')
 * mainview.js: This is the dialog window that consists of the connection window, the register window, and the login window, prior to the chat view loading up
 * message.js: The view associated with a SINGLE message (used in conjunction with chat.js)
-user_list.js: The view associated with both a SINGLE message and a LIST of messages (used in conjunction with chat.js)
+* user_list.js: The view associated with both a SINGLE message and a LIST of messages (used in conjunction with chat.js)
 
 /public/images/
 =======
