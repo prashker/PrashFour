@@ -55,3 +55,16 @@ Features
  ???
  Username Typeahead: If you are typing into the chat-input box, Bootstrap will present a dropdown of nicknames that start with the text that you are typing, with the userList as the source
  Automatic Retrieval of Backlog: When joining a channel, a backlog retrieval of oldMessages (via getOldMessages) of 50 messages is retrieved and displayed in the MessageList
+ 
+Milestones
+==========
+
+1. Determining the design for connecting node-irc with a simple front end client. (Sockets between Client/Server)
+2. Artchitecture diagram and external library/program use
+3. Implementing an almost barebones connection between node-irc and client (no design, one page, no security)
+4. Elaborate on the user interface
+5. Integrate the logging functionality (server side storing per user per channel)
+6. Working prototype (all functionality implemented at a basic level)
+7. Improve the design, optimize functionality
+8. Draft documentation
+9. Finishing touches (additional functionality, based on available time) + Final Code
