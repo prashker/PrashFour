@@ -11,19 +11,25 @@ Description:
 The goal of this project is to build web based IRC client with the ability to store chat logs and other information on the serverside and allow users to talk to eachother over the internet. This concept lends itself well to additional functionality after the initial build is complete such as: remembering user information, storing text logs and returning them to the user upon re-entry to the chatroom, multiple chatrooms, and others. It is seperated into the server side components that do the actual connection to an IRC server, along with the client side that gets live updates via WebSockets and updates the views appropriately. One of the good features allows the connection to remain active and return to the session and obtain a backlog since the client has left. In IRC world this is called a "Bouncer", and is fairly useful. This project attempted to mimic the best functionality of features displayed in Mibbit and IRCCloud (also web based IRC clients), with the added benefit of being able to self-host the server doing the connections, via Node.
 
 Dependencies used:
- node-irc (Server)
- Mongoose (Server)
- jQuery (Client)
- Express (Sever)
- Jade (Server)
- Socket.io (Server/Client Communication)
- Backbone (Client)
- connect-assets (Server)
- Password-Hash (Server)
- HTML5 (localStorage for Client)
- Twitter Bootstrap (Client)
- Font-Awesome (Client)
+* node-irc (Server)
+* Mongoose (Server)
+* jQuery (Client)
+* Express (Sever)
+* Jade (Server)
+* Socket.io (Server/Client Communication)
+* Backbone (Client)
+* connect-assets (Server)
+* Password-Hash (Server)
+* HTML5 (localStorage for Client)
+* Twitter Bootstrap (Client)
+* Font-Awesome (Client)
  
+Install
+============
+1. Run 'npm install' in the folder with package.json
+2. (Optional) Start a mongo database
+3. (Optional) Modify config.js for the mongodb path (defaults to "mongodb://mongodb@localhost/prashfour")
+2. Run 'node app' to start
  
 Commands (All commands are typed into the chat box)
 ===========
