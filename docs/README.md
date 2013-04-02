@@ -37,6 +37,7 @@ Commands (All commands are typed into the chat box)
  /ping: Returns the latency to the Node server from the client (round trip in milliseconds) - The server is continually pinged everytime a ping has been returned....inefficient?
  /backlog <num>: Retrieves the <num> messages in the database for the active channel
  /list: Displays a list in the 'list' channel (via LIST), contains the channel name, topic of the channel, and a join button!
+ /clear: Clears the messages in the active channel (clean slate)
  
 Features
 ===========

@@ -540,6 +540,11 @@ $(function() {
                 if (command[1]) {
                     irc.socket.emit('getOldMessages', {channelName: irc.chatWindows.getActive().get('name'), skip:0, amount: command[1]});
                 }
+                break;
+                
+            case '/clear':
+                irc.chatWindows.getActive().messageList.reset();
+                break;
                 
             default:
                 console.log("Unhandled command");
