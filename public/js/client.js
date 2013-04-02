@@ -103,7 +103,7 @@ $(function() {
         setTimeout(function() {
             irc.latencyStats.lastEmitTime = Date.now();
             irc.socket.emit('latencyPING', {});
-        }, 1000);
+        }, 10000);
     });
     irc.latencyStats.lastEmitTime = Date.now();
     irc.socket.emit('latencyPING', {});
