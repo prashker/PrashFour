@@ -337,7 +337,7 @@ $(function() {
 
     irc.socket.on('error', function(data) {
         var window = irc.chatWindows.getByName('status');
-        if(window === undefined){
+        if (window === undefined){
             irc.connected = true;
             irc.appView.render();
             irc.chatWindows.add({name: 'status', type: 'status'});
@@ -543,7 +543,7 @@ $(function() {
                 break;
                 
             default:
-                console.log("Unhandled command");
+                irc.appView.notifyError('Invalid Command', command[0] + " is not a valid command");
                 break;
         }
     }
