@@ -24,7 +24,7 @@ Dependencies used:
 * Twitter Bootstrap (Client)
 * Font-Awesome (Client)
  
-Install
+Install and Run
 ============
 1. Run 'npm install' in the folder with package.json
 2. (Optional) Start a mongo database
@@ -33,25 +33,24 @@ Install
  
 Commands (All commands are typed into the chat box)
 ===========
- /join #channel: Joins the selected cha
- /part <blank or #channel>: Leaves the active channel or the channel specified
- /nick <newNick>: Changes your nickname to newNick
- /topic <newTopic>: Changes the topic to new topic (if sufficient IRC powers)
- /me: ACTION command (for example /me eats a frog would be outputted *<Nick> eats a frog)
- /query <username>: Opens a query window with username (private messaging)
- /whois <username>: Retrieves the WHOIS information of a user (NOTE: BROKEN BECAUSE NODE-IRC DOES NOT HANDLE AN EVENT PROPERLY, they did not commit a pull request in their repo that fixes it yet)
- /ping: Returns the latency to the Node server from the client (round trip in milliseconds) - The server is continually pinged everytime a ping has been returned....inefficient?
- /backlog <num>: Retrieves the <num> messages in the database for the active channel
- /list: Displays a list in the 'list' channel (via LIST), contains the channel name, topic of the channel, and a join button!
- /clear: Clears the messages in the active channel (clean slate)
+* /join #channel: Joins the selected cha
+* /part <blank or #channel>: Leaves the active channel or the channel specified
+* /nick <newNick>: Changes your nickname to newNick
+* /topic <newTopic>: Changes the topic to new topic (if sufficient IRC powers)
+* /me: ACTION command (for example /me eats a frog would be outputted *<Nick> eats a frog)
+* /query <username>: Opens a query window with username (private messaging)
+* /whois <username>: Retrieves the WHOIS information of a user (NOTE: BROKEN BECAUSE NODE-IRC DOES NOT HANDLE AN EVENT PROPERLY, they did not commit a pull request in their repo that fixes it yet)
+* /ping: Returns the latency to the Node server from the client (round trip in milliseconds) - The server is continually pinged everytime a ping has been returned....inefficient?
+* /backlog <num>: Retrieves the <num> messages in the database for the active channel
+* /list: Displays a list in the 'list' channel (via LIST), contains the channel name, topic of the channel, and a join button!
+* /clear: Clears the messages in the active channel (clean slate)
  
 Features
 ===========
- Unread Notifications: If a channel receives a message and it is not the active channel in the Bootstrap navbar, it will show a Red Pill with the number of messages you've missed
- Unread Highlights: Similar to unread Notifications, if someone says your nickname, and you are not active in that channel, you will see a blue pill with the number of times your nickname was mentioned
- Emoticon Support: See utils.js for unifiedReplace function, will replace some emoticon text via regular expressions to an image of the emoticon.
- Automatic <a> creation for URLS: See unifiedReplace also, replaces things resembling links into clickable links
- Session Support: Allows logging back in automatically via localStorage storing a randomly generated session ID, associated with a user in the database, if it finds a user with that information, it logs in as them.
- ???
- Username Typeahead: If you are typing into the chat-input box, Bootstrap will present a dropdown of nicknames that start with the text that you are typing, with the userList as the source
- Automatic Retrieval of Backlog: When joining a channel, a backlog retrieval of oldMessages (via getOldMessages) of 50 messages is retrieved and displayed in the MessageList
+* Unread Notifications: If a channel receives a message and it is not the active channel in the Bootstrap navbar, it will show a Red Pill with the number of messages you've missed
+* Unread Highlights: Similar to unread Notifications, if someone says your nickname, and you are not active in that channel, you will see a blue pill with the number of times your nickname was mentioned
+* Emoticon Support: See utils.js for unifiedReplace function, will replace some emoticon text via regular expressions to an image of the emoticon.
+* Automatic 'a' tag creation for URLS: See unifiedReplace also, replaces things resembling links into clickable links
+* Session Support: Allows logging back in automatically via localStorage storing a randomly generated session ID, associated with a user in the database, if it finds a user with that information, it logs in as them.
+* Username Typeahead: If you are typing into the chat-input box, Bootstrap will present a dropdown of nicknames that start with the text that you are typing, with the userList as the source
+* Automatic Retrieval of Backlog: When joining a channel, a backlog retrieval of oldMessages (via getOldMessages) of 50 messages is retrieved and displayed in the MessageList
