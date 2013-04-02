@@ -405,7 +405,8 @@ $(function() {
         var output = '';
         var channel = irc.chatWindows.getByName(data.name);
         if (data.messages) {
-            $.each(data.messages, function(index, message) {                
+            $.each(data.messages, function(index, message) {       
+            
                 if ($('#' + message._id).length) {
                     return true; //continue to next iteration
                 }
@@ -414,7 +415,7 @@ $(function() {
                 var oldmessage_html;
                 if (message.message.substr(1, 6) === 'ACTION') {
                     oldmessage_html = _.template($("#action-message").html(), {
-                        user: message.user,
+                        user: message.user + ' [Backlog]',
                         content: message.message.substr(8),
                         timeStamp: moment(message.date).format('ddd MMM D YYYY, h:mmA'),
                         type: 'backlog'
@@ -422,7 +423,7 @@ $(function() {
                 } 
                 else {
                     oldmessage_html = _.template($("#message").html(), {
-                        user: message.user,
+                        user: message.user + ' [Backlog]',
                         content: message.message,
                         timeStamp: moment(message.date).format('ddd MMM D YYYY, h:mmA'),
                         type: 'backlog'
@@ -534,6 +535,11 @@ $(function() {
             case '/list':
                 irc.socket.emit('list', {args: command.splice(1)}); //list takes [array of args]
                 break;
+                
+            case '/backlog':
+                if (command[1]) {
+                    irc.socket.emit('getOldMessages', {channelName: irc.chatWindows.getActive().get('name'), skip:0, amount: command[1]});
+                }
                 
             default:
                 console.log("Unhandled command");
