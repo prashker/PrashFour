@@ -111,6 +111,7 @@ $(function() {
     irc.socket.emit('isDatabaseConnected', {});
     irc.socket.on('isDatabaseConnected', function(data) {
         if (data.state == 0) {
+            irc.appView.notifyError('Database Error', "Cannot connect to database, removing DB buttons");
             $('#login, #register').hide(); //Hide the buttons if state = inactive (probably off)
         }
     });
@@ -130,14 +131,18 @@ $(function() {
 
         // Will reflect modified nick, if chosen nick was taken already
         irc.me.set('nick', data.message.args[0]);
+        
+        irc.appView.notifySuccess("Connected", "Welcome " + data.message.args[0]);
     });
 
     irc.socket.on('login_success', function(data) {
         window.irc.loggedIn = true;
         localStorage.setItem('session', data.session);
+        irc.appView.notifySuccess("Login Success", "Logged in as " + data.username);
         if (data.establishedConnectionExists) {
             //Connect back to established connection
             irc.socket.emit('connect', {});
+            irc.appView.notifySuccess("Restoring connection", "Previous connection exists, attaching...");
         } else {
             //Load the connection dialog mainview_connection
             irc.appView.mainview.render({currentTarget: {id: "connection"}});
@@ -337,7 +342,7 @@ $(function() {
 
     irc.socket.on('error', function(data) {
         var window = irc.chatWindows.getByName('status');
-        if (window === undefined){
+        if (window === undefined) {
             irc.connected = true;
             irc.appView.render();
             irc.chatWindows.add({name: 'status', type: 'status'});
