@@ -36,7 +36,7 @@ script(id="mainview_home", type="text/x-underscore-template")
             i.icon-group
             span Register
 
-script(id="mainview_main", type="text/x-underscore-template")
+script(id="mainview_wrapper", type="text/x-underscore-template")
     #mainview.text-center
 
 script(id="mainview_connection", type="text/x-underscore-template")
@@ -100,10 +100,6 @@ script(id="mainview_connection", type="text/x-underscore-template")
             button#connect-button.btn.btn-primary Connect
             button#connect-more-options-button.btn More Options
 
-script(id="mainview_settings", type="text/x-underscore-template")
-    button.btn.btn-info.mainview-button#home Home
-    p#settings-soon If there is no ideas here, it will be removed, Chris?
-
 script(id="mainview_login", type="text/x-underscore-template")
     button.btn.btn-info.mainview-button#home Home
     form.form-inline
@@ -141,10 +137,9 @@ script(id="chat", type="x-underscore-template")
             #chat-bar.absolute
             #chat-contents.absolute
             #input-container.absolute
-                .input
-                    input#chat-input(autocomplete="off")
-                    a#chat-button.btn.btn-primary Send
-        #user-window
+                input#chat-input(autocomplete="off")
+                button#chat-button.btn.btn-primary Send
+        #user-list-window
             #user-bar.absolute
                 .titlebar
                     span.window_title User List
@@ -167,9 +162,8 @@ script(id="user_box", type="text/x-underscore-template")
         i.icon-remove.close-button
 
 script(id="userlist_user", type="text/x-underscore-template")
-    div.userlist-user-info
-        div.userlist_user_name <%=prefix%><%=nick%>
-            span.userlist-user-buttons
+        div.user-in-list-name <%=prefix%><%=nick%>
+            span.user-in-list-buttons
                 button.btn.btn-info.pmbutton PM
                 button.btn.btn-success.whoisbutton WHOIS
                 button.btn.btn-danger.pingbutton PING
