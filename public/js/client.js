@@ -9,7 +9,9 @@
 //= require 'models.js'
 //= require 'collections.js'
 //= require 'router.js'
-//= require_tree 'views_js'
+//= require_tree 'BackboneViews'
+
+//connect-assets require statements, similar to doing script() in Jade, but allows it to be a little more seperate (Jade for HTML frame stuff, connect-assets/snockets for JS requirements and depencencies)
 
 window.irc = {
     //From //https://github.com/LearnBoost/socket.io-client/issues/251#issuecomment-2283801
@@ -497,7 +499,7 @@ $(function() {
         }
     });
 
-    //The block that handles all the /commands sent from the input-box
+    //The block that handles all the /commands sent from the input-box, a simple switch block
     irc.commandHandle = function (command) {
         switch (command[0]) {
             case '/join':
