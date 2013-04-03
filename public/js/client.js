@@ -12,8 +12,8 @@
 //= require_tree 'views_js'
 
 window.irc = {
-    //From 
-    //https://github.com/LearnBoost/socket.io-client/issues/251#issuecomment-2283801
+    //From //https://github.com/LearnBoost/socket.io-client/issues/251#issuecomment-2283801
+    //PORT is a global variable handed by Jade
     socket: io.connect(null, {'force new connection': true, port: PORT}),
     chatWindows: new WindowList(),
     connected: false,
@@ -89,11 +89,13 @@ $(function() {
     
     //Session Login
     //http://jsperf.com/localstorage-in-versus-hasownproperty
+    //If we already have a session key, tell the server to login via our key
     if ('session' in localStorage) {
         irc.socket.emit('loginBySession', {session: localStorage.getItem('session')});
     }
 
     //https://groups.google.com/forum/?fromgroups=#!searchin/socket_io/latency/socket_io/66oeLfcq_1I/Hv2D6U0F5qAJ
+    //Ping loop, continually ping the server and maintain the data on the client size for the course of the session
     irc.socket.on('latencyPONG', function() {
     
         irc.latencyStats.lastPing = Date.now() - irc.latencyStats.lastEmitTime;
@@ -108,6 +110,7 @@ $(function() {
     irc.latencyStats.lastEmitTime = Date.now();
     irc.socket.emit('latencyPING', {});
 
+    //Emits and handles the query to the server if the database is up and running (and connected)
     irc.socket.emit('isDatabaseConnected', {});
     irc.socket.on('isDatabaseConnected', function(data) {
         if (data.state == 0) {
@@ -118,10 +121,9 @@ $(function() {
 
     // Registration (server joined)
     irc.socket.on('registered', function(data) {
-        var window = irc.chatWindows.getByName('status');
-        irc.socket.emit('getNick', {});
         irc.connected = true;
-        if (window === undefined) {
+        //Create the status window (if it wasn't created by a NOTICE before)
+        if (irc.chatWindows.getByName('status') === undefined) {
             irc.appView.render();
             irc.chatWindows.add({name: 'status', type: 'status'});
         } 
@@ -135,10 +137,14 @@ $(function() {
         irc.appView.notifySuccess("Connected", "Welcome " + data.message.args[0]);
     });
 
+    //Successfully logged in
     irc.socket.on('login_success', function(data) {
         window.irc.loggedIn = true;
+        //Store the session key the server sends us
         localStorage.setItem('session', data.session);
+        
         irc.appView.notifySuccess("Login Success", "Logged in as " + data.username);
+        
         if (data.establishedConnectionExists) {
             //Connect back to established connection
             irc.socket.emit('connect', {});
@@ -149,85 +155,104 @@ $(function() {
         }
     });
 
+    
+    //This would normally happen if the node instance dies
     irc.socket.on('disconnect', function() {
-        alert('You were disconnected from the server.');
-        $('.container-fluid').css('opacity', '0.5');
+        //Notification
+        irc.appView.notifySuccess("Disconnected", "The node server has most likely died, disconnecting...");
+        
+        //Make the window seem unclickable anymore (can't necessarily throw a 404 so this is the best we can do)
+        $('.backboneAllWrap').css('opacity', '0.5');
+        
+        irc.loggedIn = false;
+        irc.connected = false;
     });
 
-
+    //Once a registration goes through successfully
     irc.socket.on('register_success', function(data) {
-        window.irc.loggedIn = true;
+        //Automatically login via registration
+        irc.loggedIn = true;
+        
+        //Store the session automatically (bugfix)
         localStorage.setItem('session', data.session);
+        
+        //Show the connection window
         irc.appView.mainview.render({currentTarget: {id: "connection"}});
+        
+        //Notification
+        irc.appView.notifySuccess("Registration success", "You have now registered, logged in");
     });
 
-    irc.socket.on('restore_connection', function(data) {
+    
+    //Called if we've logged in and there exists a previous connection (means the user had checked off the "keep alive" box
+    irc.socket.on('previous_connection', function(data) {
+        //Do setup similar to on 'registered', but with pre-existing values
         irc.me = new User({nick: data.nick, server: data.server});
         irc.connected = true;
         irc.appView.render();
         irc.appView.renderUserBox();
         irc.chatWindows.add({name: 'status', type: 'status'});
+        
+        
+        //For each channel we're currently in
         $.each(data.channels, function(key, value) {
+            //Get the channel name
             var chanName = value.serverName.toLowerCase();
-            if (chanName[0] == '#') {
-                irc.chatWindows.add({name: chanName, initial: true});
-            } 
-            else {
-                irc.chatWindows.add({name: chanName, type: 'pm', initial: true});
-            }
+            
+            //Create the channel
+            irc.chatWindows.add({name: chanName});
+            
+            //Retrieve the Model
             var channel = irc.chatWindows.getByName(chanName);
-            var channelTabs = irc.appView.channelList.channelTabs;
-            var channelTab = channelTabs[channelTabs.length-1];
+            
+            //Set the data held by PrashFour (topic, unread data)
             channel.set({
                 topic: value.topic,
                 unread: 0,
                 unreadHighlights: 0
             });
             
-            channelTab.updateUnreadCounts();
+            //Create the userlist
             if (chanName[0] == '#') {
                 channel.userList = new UserList(channel);
+                //For each user, wrap them into a user Model, and add to the userList
                 $.each(value.users, function(user, prefix) {
                     channel.userList.add(new User({nick: user, prefix: prefix}));
                 });
                 irc.socket.emit('getOldMessages',{channelName: chanName, skip:0, amount: 50});
             }
-            else {
-                irc.socket.emit('getOldMessages',{channelName: chanName, skip:0, amount: 50});
-                channel.messageList.add(new Message({sender:'', raw:''}));
-            }
         });
 
-        $('.channel:first').click();
+        $('.channel:first').click(); //Switch to the first tab
     });
-
+    
+    //Notices are usually sent to the status window (mIRC option)
     irc.socket.on('notice', function(data) {
-        var status = irc.chatWindows.getByName('status');
-        if (status === undefined) {
+        var statusWindow = irc.chatWindows.getByName('status');
+        //This could be BEFORE on('registered'), so create status window accordingly
+        if (statusWindow === undefined) {
             irc.connected = true;
             irc.appView.render();
             irc.chatWindows.add({name: 'status', type: 'status'});
-            status = irc.chatWindows.getByName('status');
+            statusWindow = irc.chatWindows.getByName('status');
         }
-        var sender = (data.nick !== undefined) ? data.nick : 'notice';
-        status.messageList.add({sender: sender, raw: data.text, type: 'notice'});
+        var sender = data.nick || 'notice';
+        statusWindow.messageList.add({sender: sender, text: data.text, type: 'notice'});
     });
 
-    // Message of the Day
+    // Message of the Day (Added to the Status Window)
     irc.socket.on('motd', function(data) {
-        var message = new Message({sender: 'status', raw: data.motd, type: 'motd'});
+        //MOTD usually indicates that the final step in connection has been done (aka you can actually join a channel)
+        var message = new Message({sender: 'status', text: data.motd, type: 'motd'});
         irc.chatWindows.getByName('status').messageList.add(message);
     });
 
+    //Important metho,d handle a message
     irc.socket.on('message', function(data) {
-        var chatWindow = irc.chatWindows.getByName(data.to.toLowerCase());
-        // Only handle channel messages here; PMs handled separately
+        //Get the chat window for it
         if (data.to.substr(0, 1) === '#') {
-            chatWindow.messageList.add(new Message({sender: data.from, raw: data.text, type: 'message'}));
-        } 
-        else if (data.to !== irc.me.get('nick')) {
-            // Handle PMs intiated by me
-            chatWindow.messageList.add(new Message({sender: data.from.toLowerCase(), raw: data.text, type: 'pm'}));
+            var chatWindow = irc.chatWindows.getByName(data.to.toLowerCase());
+            chatWindow.messageList.add(new Message({sender: data.from, text: data.text, type: 'message'}));
         }
     });
     
@@ -236,30 +261,37 @@ $(function() {
         var chatWindow = irc.chatWindows.getByName(data.to.toLowerCase());
         var type = 'message';
         if (data.to.substr(0, 1) === '#') {
-            chatWindow.messageList.add({sender: data.from, raw: ' ACTION ' + data.text, type: type});
+            chatWindow.messageList.add({sender: data.from, text: ' ACTION ' + data.text, type: type});
         } 
         else if (data.to !== irc.me.get('nick')) {
-            chatWindow.messageList.add({sender: data.from.toLowerCase(), raw: ' ACTION ' + data.text, type: 'pm'});
+            chatWindow.messageList.add({sender: data.from.toLowerCase(), text: ' ACTION ' + data.text, type: 'pm'});
         }
     });
 
+    //On a private message from another user
     irc.socket.on('pm', function(data) {
+        //Find the window or create one
         var chatWindow = irc.chatWindows.getByName(data.nick.toLowerCase());
-        if (typeof chatWindow === 'undefined') {
-            irc.chatWindows.add({name: data.nick.toLowerCase(), type: 'pm'}).trigger('forMe', 'newPm');
+        if (chatWindow === undefined) {
+            irc.chatWindows.add({name: data.nick.toLowerCase(), type: 'pm'});
+            //Even private messages can have backlogs
             irc.socket.emit('getOldMessages',{channelName: data.nick.toLowerCase(), skip:0, amount: 50});
             chatWindow = irc.chatWindows.getByName(data.nick.toLowerCase());
         }
-        chatWindow.messageList.add({sender: data.nick, raw: data.text, type: 'pm'});
+        chatWindow.messageList.add({sender: data.nick, text: data.text, type: 'pm'});
     });
 
+    //When a user joins the channel
     irc.socket.on('join', function(data) {
         var chanName = data.channel.toLowerCase();
+        //If that user is me (aka I successfully joined a channel)
+        //Request the backlog
         if (data.nick === irc.me.get('nick')) {
             irc.chatWindows.add({name: chanName});
             irc.socket.emit('getOldMessages', {channelName: chanName, skip:0, amount: 50});
         } 
         else {
+            //Someone else joined, setup the message, and add them in
             var channel = irc.chatWindows.getByName(chanName);
             if (typeof channel === 'undefined') {
                 irc.chatWindows.add({name: chanName});
@@ -271,53 +303,68 @@ $(function() {
         }
     });
 
+    //Someone parted
     irc.socket.on('part', function(data) {
         var chanName = data.channel.toLowerCase();
         var channel = irc.chatWindows.getByName(chanName);
+        //If I parted
         if (data.nick === irc.me.get('nick')) {
             channel.part();
         } 
         else {
+            //If someone else parted, destroy them from the userList
             var user = channel.userList.getByNick(data.nick);
             user.view.remove();
             user.destroy();
+            //Put a part message into the chat window
             var partMessage = new Message({type: 'part', nick: data.nick});
             channel.messageList.add(partMessage);
         }
     });
 
+    //If someone has quit the server
     irc.socket.on('quit', function(data) {
-        var channel, user, quitMessage;
-        for(var i=0; i<data.channels.length; i++){
-            channel = irc.chatWindows.getByName(data.channels[i]);
+        //Find every channel that the user was in (server sends that to us)
+        for (var i in data.channels) {
+            var channel = irc.chatWindows.getByName(data.channels[i]);
+            //Find out if we were in that channel
             if (channel !== undefined) {
-                user = channel.userList.getByNick(data.nick);
+                //If we were, destroy them from the userList
+                var user = channel.userList.getByNick(data.nick);
                 user.view.remove();
                 user.destroy();
-                quitMessage = new Message({type: 'quit', nick: data.nick, reason: data.reason, message: data.message});
+                //And display a quit message with the data why they left
+                var quitMessage = new Message({type: 'quit', nick: data.nick, reason: data.reason, message: data.message});
                 channel.messageList.add(quitMessage);
             }
         }
     });
 
+    //Server has sent us the list of users in a channel
     irc.socket.on('names', function(data) {
+        //Get the channel
         var channel = irc.chatWindows.getByName(data.channel.toLowerCase());
+        
+        //NAMES is only sent on a new channel, so create a UserList
         channel.userList = new UserList(channel);
+        
+        //For each nickname and their prefix (OP status)
         $.each(data.nicks, function(nick, prefix) {
             channel.userList.add(new User({nick: nick, prefix: prefix}));
         });
+        
         //Notify the handleInput method
-        channel.view.handleInput();
+        channel.view.handleInput(); //Recalculate typeahead SOURCE
     });
 
+    //Server has sent us that someone has changed their nickname
     irc.socket.on('nick', function(data) {
-        //If it was me
+        //If it was you
         if (data.oldNick === irc.me.get('nick')) {
             irc.me.set('nick', data.newNick);
             irc.appView.renderUserBox(); //re-render userbox
         }
-       
-
+        
         // Add nickmessage to all channels
         // Adjust views
         var nickMessage = new Message({type: 'nick', oldNick: data.oldNick, newNick: data.newNick});
@@ -333,14 +380,22 @@ $(function() {
         
     });
 
+    //Server has sent us TOPIC ON JOIN or ON CHANGE
     irc.socket.on('topic', function(data) {
+        //Get the channel
         var channel = irc.chatWindows.getByName(data.channel.toLowerCase());
+        
+        //Change the topic
         channel.set({topic: data.topic});
+        
+        //Add a topic change message to the messageList
         var topicMessage = new Message({type: 'topic', nick: data.nick, topic: irc.unifiedReplace(data.topic)});
         channel.messageList.add(topicMessage);
     });
 
+    //Handler of node-irc "error" event
     irc.socket.on('error', function(data) {
+        //Basically output it to 'status' as a notice
         var window = irc.chatWindows.getByName('status');
         if (window === undefined) {
             irc.connected = true;
@@ -348,27 +403,34 @@ $(function() {
             irc.chatWindows.add({name: 'status', type: 'status'});
             window = irc.chatWindows.getByName('status');
         }
-        window.messageList.add({sender: 'error', raw: data.message.args.join(), type: 'notice'});
+        window.messageList.add({sender: 'error', text: data.message.args.join(), type: 'notice'});
     });
 
+    //Handler of node-irc "netError", most likely a connection failure/ban/etc
     irc.socket.on('netError', function(data) {
         irc.appView.notifyError('netError', data.message.code);
     });
     
+    //Sent by server when it has given up on connecting
     irc.socket.on('abort', function (data) {
+        //Remove the loading spinner
         $('.icon-spinner').remove();
+        
         $('#connect-button').removeClass('disabled'); //Make connect button active again
         irc.appView.notifyError('Abort', "Aborting Connection");
     });
 
+    //Login Failure
     irc.socket.on('login_error', function(data) {
         irc.appView.notifyError("Login Error", data.message);
     });
 
+    //Register Failure
     irc.socket.on('register_error', function(data) {
         irc.appView.notifyError("Register Error", data.message);
     });
 
+    //Restore to Initial State
     irc.socket.on('reset', function(data) {
         irc.chatWindows = new WindowList();
         irc.connected = false;
@@ -399,13 +461,14 @@ $(function() {
         var activeMessageList = irc.chatWindows.getActive().messageList;
         if (data.info) {
             for (var whoisKey in data.info) {
-                var message = new Message({sender: "WHOIS", raw: data.info[whoisKey], type: 'whois'});
+                var message = new Message({sender: "WHOIS", text: data.info[whoisKey], type: 'whois'});
                 activeMessageList.add(message);
             }
         }
         
     });      
       
+    //Restore old messages for a channel/pm
     irc.socket.on('oldMessages', function(data) {
         var channel = irc.chatWindows.getByName(data.name);
         if (data.messages) {
@@ -419,6 +482,7 @@ $(function() {
         }
     });
 
+    //Received the channellist from the server (WARNING: USUALLY TAKES LONG)
     irc.socket.on('channellist', function(data) {
         var window = irc.chatWindows.getByName('list');
         if (window === undefined) {
@@ -427,15 +491,15 @@ $(function() {
         var listMessageList = irc.chatWindows.getByName('list').messageList;
         if (listMessageList) {
             for (var index in data.channel_list) {
-                var message = new Message({sender: data.channel_list[index].name , raw: "Num Users: " + data.channel_list[index].users + " Topic: " + data.channel_list[index].topic , type: 'list'});        
+                var message = new Message({sender: data.channel_list[index].name , text: "Num Users: " + data.channel_list[index].users + " Topic: " + data.channel_list[index].topic , type: 'list'});        
                 listMessageList.add(message);
             }
         }
     });
 
+    //The block that handles all the /commands sent from the input-box
     irc.commandHandle = function (command) {
         switch (command[0]) {
-        
             case '/join':
                 irc.socket.emit('join', command[1]);
                 break;
@@ -495,12 +559,13 @@ $(function() {
                 }
                 else {
                     var activeMessageList = irc.chatWindows.getActive().messageList;
-                    var message = new Message({sender: "ping", raw: "Latest Latency: " + irc.latencyStats.lastPing + " ms - Average over " + irc.latencyStats.numOfPings + " pings: " + (irc.latencyStats.totalPing / irc.latencyStats.numOfPings) + " ms", type: 'ping'});        
+                    var message = new Message({sender: "ping", text: "Latest Latency: " + irc.latencyStats.lastPing + " ms - Average over " + irc.latencyStats.numOfPings + " pings: " + (irc.latencyStats.totalPing / irc.latencyStats.numOfPings) + " ms", type: 'ping'});        
                     activeMessageList.add(message);
                 }
                 break;
                 
             case '/list':
+                irc.appView.notifyInfo("LIST requested", "Long running command, might halt other functions till completion");
                 irc.socket.emit('list', {args: command.splice(1)}); //list takes [array of args]
                 break;
                 
