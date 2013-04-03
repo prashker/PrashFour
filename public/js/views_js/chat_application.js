@@ -60,6 +60,15 @@ var ChatApplicationView = Backbone.View.extend({
             animation: 'fade'
         });
     },
+    
+    notifyInfo: function(title, text) {
+        $.pnotify({
+            title: title,
+            text: text,
+            type: 'info',
+            animation: 'fade'
+        });
+    },
 
     // Show number of unread highlights in title
     showUnread: function() {

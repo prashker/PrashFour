@@ -17,7 +17,7 @@ var MessageView = Backbone.View.extend({
             html = _.template($('#action-message').html(), {
                 user: nick,
                 content: this.model.get('text').substr(8),
-                timeStamp: moment().format('ddd MMM D YYYY, h:mmA')
+                timeStamp: this.model.get('timeStamp') || moment().format('ddd MMM D YYYY, h:mmA')
             });
             html = this.model.parse(html);
         } 
@@ -26,7 +26,7 @@ var MessageView = Backbone.View.extend({
                 user: nick,
                 type: this.model.get('type'),
                 content: this.model.get('text'),
-                timeStamp: moment().format('ddd MMM D YYYY, h:mmA')
+                timeStamp: this.model.get('timeStamp') || moment().format('ddd MMM D YYYY, h:mmA')
             });
             html = this.model.parse(html);
         }
