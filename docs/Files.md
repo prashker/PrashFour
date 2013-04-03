@@ -30,15 +30,15 @@ Files
 * collections.js: Array of models, in this case, Models, ChatWindows, Users
 * router.js: Handles the #hashtag based URL of each page. Currently in progress...
 
-/public/js/views/
+/public/js/BackboneViews/
 ========
-* channel_list.js: The view for the channel list
-* channel_tab.js: The view for the tabs of each channel (handles the events of switching channel, leaving channel, etc)
-* chat.js: One of the more important views, the actual ChatWindow, which consists of the message view (list of messages), user list (list of users in this channel), and chat-input
-* chat_application.js: The wrapper for the whole application, it has a method that replaces the html of $('body')
-* mainview.js: This is the dialog window that consists of the connection window, the register window, and the login window, prior to the chat view loading up
-* message.js: The view associated with a SINGLE message (used in conjunction with chat.js)
-* user_list.js: The view associated with both a SINGLE message and a LIST of messages (used in conjunction with chat.js)
+* ChannelListView.js: The view for the channel list
+* ChannelTabView.js: The view for the tabs of each channel (handles the events of switching channel, leaving channel, etc)
+* ChatView.js: One of the more important views, the actual ChatWindow, which consists of the message view (list of messages), user list (list of users in this channel), and chat-input
+* PrashFourApplicationView: The wrapper for the whole application, it has a method that replaces the html of $('body')
+* MainView.js: This is the dialog window that consists of the connection window, the register window, and the login window, prior to the chat view loading up
+* MessageView.js: The view associated with a SINGLE message (used in conjunction with chat.js)
+* UserAnduserListView.js: The view associated with both a SINGLE message and a LIST of messages (used in conjunction with chat.js)
 
 /public/images/
 =======
