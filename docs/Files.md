@@ -11,7 +11,7 @@ Files
 
 /views/
 ======
-* index.jade: Loads the javascript files used to manipulate the DOM (Backbone) and access to the templates
+* index.jade: Loads the javascript files used to manipulate the DOM (Backbone) and access to the templates (mainly client.js, which has the others via connect-assets)
 * template.jade: Contains all the templates used to populate the visuals on the client side
 
 /
