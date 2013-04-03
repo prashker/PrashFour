@@ -407,49 +407,16 @@ $(function() {
     });      
       
     irc.socket.on('oldMessages', function(data) {
-        var output = '';
         var channel = irc.chatWindows.getByName(data.name);
         if (data.messages) {
-            $.each(data.messages, function(index, message) {       
-            
-                if ($('#' + message._id).length) {
-                    return true; //continue to next iteration
-                }
-
-                var type = '';
-                var oldmessage_html;
-                if (message.message.substr(1, 6) === 'ACTION') {
-                    oldmessage_html = _.template($("#action-message").html(), {
-                        user: message.user + ' [Backlog]',
-                        content: message.message.substr(8),
-                        timeStamp: moment(message.date).format('ddd MMM D YYYY, h:mmA'),
-                        type: 'backlog'
-                    });
-                } 
-                else {
-                    oldmessage_html = _.template($("#message").html(), {
-                        user: message.user + ' [Backlog]',
-                        content: message.message,
-                        timeStamp: moment(message.date).format('ddd MMM D YYYY, h:mmA'),
-                        type: 'backlog'
-                    });
-                }
-
-
-                if (message.user == irc.me.get('nick')){
-                    type = 'message-me';
-                } else {
-                    oldmessage_html = irc.highlightReplace(oldmessage_html);
-                }
-                
-                oldmessage_html = irc.unifiedReplace(oldmessage_html);
-                oldmessage_html = '<div class="message-box ' + type + '">' + oldmessage_html + '</div>';
-                output += oldmessage_html;
+            $.each(data.messages.reverse(), function(index, message) {  
+                channel.messageList.add(new Message({sender: message.user + ' [Backlog]', 
+                    timeStamp: moment(message.date).format('ddd MMM D YYYY, h:mmA'), 
+                    text: message.message, 
+                    type: 'backlog'})
+                );
             });
         }
-        if (channel)
-            channel.view.$('#chat-contents').prepend(output);
-
     });
 
     irc.socket.on('channellist', function(data) {
