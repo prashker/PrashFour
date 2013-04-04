@@ -4,6 +4,28 @@
     PF
 */
 
+/* SCROLLBAR -- Webkit Only? 
+http://stackoverflow.com/questions/7224634/webkit-css-scrollbar-styling
+*/
+::-webkit-scrollbar {  
+    width:8px;
+    height:8px;
+    -webkit-border-radius: 4px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-track-piece {
+    background-color:transparent;
+}
+
+::-webkit-scrollbar-thumb {  
+    background-color: rgba(053, 057, 071, 0.3);
+    width: 6px;
+    height: 6px;
+    -webkit-border-radius:4px;
+}
+/* SCROLLBAR */
+
 html {
     overflow: hidden;
 }
@@ -18,20 +40,10 @@ html {
     padding: 0;
     font-size: 12px;
     position: absolute;
-    top: 40px;
+    top: 40px; /* 40px from the top because of the navbar */
     left: 0;
     bottom: 0;
     right: 0;
-}
-
-.wrapper:before, .wrapper:after {
-    display: table;
-    content: "";
-    zoom: 1;
-}
-
-.wrapper:after {
-    clear: both;
 }
 
 .wrapper > .content {
@@ -179,6 +191,8 @@ html {
     border-right: 1px solid #FA6121
 }
 
+/* chat input box and button */
+
 #input-container {
     height: 55px;
     position: absolute;
@@ -199,9 +213,7 @@ html {
     margin-left: 2%;
 }
 
-#input-container .input a{
-    font-size: 1.3em;
-}
+/* message formatting */
 
 .message-box {
     border-bottom: 1px solid #DDDDDD;
@@ -209,13 +221,19 @@ html {
     width: 100%;
 }
 
+/* it is myself who is sending the message */
+
 .message-me {
     background: #EBF0FA;
 }
 
+/* someone changed the topic, someone changed nick, etc */
+
 .message-notification {
     padding: 1% 0% 1% 1%;
 }
+
+/* name column */
 
 .chat-name {
     display: table-cell;
@@ -226,6 +244,8 @@ html {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+/* message column */
 
 .chat-message {
     display: table-cell;
@@ -256,6 +276,8 @@ html {
     border-right: 1px solid #DDDDDD;
 }
 
+/* time column */
+
 .chat-time {
     display: table-cell;
     vertical-align: top;
@@ -265,7 +287,9 @@ html {
     width: 20%;
 }
 
-#user-window {
+/* USER LIST STUFF */
+
+#user-list-window {
     height: 100%;
     width: 20%;
     position: absolute;
@@ -280,34 +304,33 @@ html {
     overflow-y: auto;
 }
 
-.userlist-user {
-    border-bottom: 1px solid #CCCCCC;
-    display: table;
-    height: 31px;
-    width: 100%;
+.user-in-list {
+    padding-top: 3%;
+    padding-right: 0%;
+    padding-bottom: 3%;
+    padding-left: 5%;
 }
 
-.userlist-user-info {
-    display: table-cell;
-    width: 87%;
-    padding: 3% 0% 3% 5%;
-}
-
-.userlist-user-name {
+.user-in-list-name {
     font-weight: bold;
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.userlist-user-buttons {
-    /* TO FIX: float: right; */
+/* userlist buttons 
+    0% transparent on hover
+    80% transparent off hover
+*/
+
+.user-in-list-buttons {
+    float: right;
 }
 
-.userlist-user-buttons > button {
+.user-in-list-buttons > button {
     opacity: 0.8;
 }
 
-.userlist-user-buttons > button:hover {
+.user-in-list-buttons > button:hover {
     opacity: 1;
 }

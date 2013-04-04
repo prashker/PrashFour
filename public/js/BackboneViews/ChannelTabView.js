@@ -25,8 +25,6 @@ var ChannelTabView = Backbone.View.extend({
     },
 
     setActive: function() {
-        console.log("setting active: ");
-        console.log(this.model);
         if (!this.model.get('active')) {
             irc.chatWindows.setActive(this.model);
         }
@@ -55,9 +53,6 @@ var ChannelTabView = Backbone.View.extend({
         e.stopPropagation();
         if (this.model.get('type') === 'channel') {
             irc.socket.emit('part', this.model.get('name'));
-        }
-        else {
-            irc.socket.emit('part_pm', this.model.get('name'));
         }
         this.model.destroy();
     },
