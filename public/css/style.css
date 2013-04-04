@@ -102,10 +102,6 @@ html {
     padding-top: 10px;
 }
 
-#ssl-self-signed {
-    display: none; /* hide until we want to show it */
-}
-
 #user-box .close-button {
     opacity: 0.3;
     text-align: center;
