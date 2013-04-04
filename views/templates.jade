@@ -136,9 +136,10 @@ script(id="chat", type="x-underscore-template")
         #chat-window
             #chat-bar.absolute
             #chat-contents.absolute
-            #input-container.absolute
-                input#chat-input(autocomplete="off")
+            #input-wrapper.absolute
                 button#chat-button.btn.btn-primary Send
+                #inputbox
+                    input#chat-input(autocomplete="off") //- per the requirements of bootstrap typeahead
         #user-list-window
             #user-bar.absolute
                 .titlebar

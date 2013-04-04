@@ -47,7 +47,7 @@ html {
 }
 
 .wrapper > .content {
-    min-height: 100%;
+    min-height: 100%; /* make sure the context expands the whole window */
     min-width: 100%;
     background-color: #DBE8F9;
     position: absolute;
@@ -66,7 +66,7 @@ html {
 }
 
 #mainview {
-    width: 600px;
+    width: 600px; /* have a centered box with the displayed options */
     margin-top: 10%;
     margin-right: auto;
     margin-left: auto;
@@ -76,11 +76,11 @@ html {
 }
 
 #mainview ul li i {
-        font-size: 75px;
+    font-size: 75px; /* i is font-awesome styling, use 75px to make them big enough */
 }
 
 #mainview ul li { 
-    display: inline-block;
+    display: inline-block; /* side by side, padded properly */
     padding: 10px;
     margin: 0px 10px;
     text-align: center;
@@ -93,12 +93,8 @@ html {
     border-radius: 5px;
 }
 
-#mainview ul li img {
-    height: 75px;
-}
-
 #mainview li span {
-    display: block;
+    display: block; /*text for the buttons */
     font-weight: bold;
 }
 
@@ -107,7 +103,7 @@ html {
 }
 
 #ssl-self-signed {
-    display: none;
+    display: none; /* hide until we want to show it */
 }
 
 #user-box .close-button {
@@ -135,7 +131,7 @@ html {
     opacity: 1;
 }
 
-#channels > .channel:not(.active):hover {
+#channels > .channel:not(.active):hover { /* highlight the non-active channels on hover */
     background: #FFB739;
     color: #444444;
     cursor: pointer;
@@ -193,7 +189,9 @@ html {
 
 /* chat input box and button */
 
-#input-container {
+
+/* from http://stackoverflow.com/questions/3682649/how-to-stretch-the-width-of-an-element-so-that-its-100-widths-of-its-siblin */
+#input-wrapper {
     height: 55px;
     position: absolute;
     bottom: 0;
@@ -202,15 +200,22 @@ html {
     border-right: 1px solid #DDDDDD;
 }
 
-#input-container .input {
-    padding-top: 10px;
+#input-wrapper #chat-button {
+    float: right;
+    margin-top: 15px;
 }
 
-#input-container .input input {
-    width: 80%;
-    margin-right: 2%;
-    float: left;
-    margin-left: 2%;
+#inputbox { 
+    margin-top: 17px; /* to align with button */
+    padding-right: 5px; /* little space beside button and input */
+    overflow: hidden; 
+}
+
+#inputbox input { 
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; 
 }
 
 /* message formatting */
