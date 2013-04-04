@@ -9,15 +9,13 @@ var ChatView = Backbone.View.extend({
         this.model.bind('change:topic', this.updateTitle, this);
         //Same with adding a message
         this.model.messageList.bind('add', this.addMessage, this);
+        //And when we delete all
+        this.model.messageList.bind('reset', this.clearAllMessages, this);
     },
 
-    updateTitle: function(channel) {
+    updateTitle: function() {
         var topic = this.model.get('topic') || '';
-        var context = {
-            title: this.model.get('name'),
-            topic: utils.unifiedReplace(topic)
-        };
-        this.$('#chat-bar').html(_.template($("#titlebar").html(), context));
+        this.$('#chat-bar').html(_.template($("#titlebar").html(), {title: this.model.get('name'), topic: irc.unifiedReplace(topic)}));
     },
 
     render: function() {
@@ -109,4 +107,9 @@ var ChatView = Backbone.View.extend({
             }
         }
     },
+    
+    clearAllMessages: function() {
+        this.$('#chat-contents').empty();
+    }
+    
 });
