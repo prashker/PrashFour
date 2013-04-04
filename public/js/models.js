@@ -4,9 +4,9 @@ var Message = Backbone.Model.extend({
     },
 
     initialize: function() {
-        //highlightReplace was moved out of models.js to irc.js, this is a highlight fix
-        //check if nick is present in text
-        if (this.get('type') === 'message' && this.get('text').search('\\b' + irc.me.get('nick') + '\\b') !== -1) {
+        //Check if the message contains our nickname
+        //Applies to any message
+        if (this.get('text').search('\\b' + irc.me.get('nick') + '\\b') !== -1) {
             this.set({highlight: true});
         }
     },
