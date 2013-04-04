@@ -6,36 +6,44 @@ var MainView = Backbone.View.extend({
     },
 
     events: {
-        'click #connect-button': 'connect',
-        'click #connect-more-options-button': 'more_options',
-        'click #login-button': 'login',
-        'click #register-button': 'register',
-        'keypress': 'connectOnEnter',
-        'click #connect-secure': 'toggle_ssl_options'
+        'click #connect-button': 'connect', //connect button clicked
+        'click #connect-more-options-button': 'more_options', //more options button clicked
+        'click #login-button': 'login', //login button clicked
+        'click #register-button': 'register', //register button clicked
+        'keypress': 'connectOnEnter', //used mostly for enter key of form submission
+        'click #connect-secure': 'toggle_ssl_options' //more-options ssl toggle
     },
 
     render: function(event) {
         var that = this;
         
-        this.$el.html(_.template($("#mainview_main").html()));
+        this.$el.html(_.template($("#mainview_wrapper").html()));
 
         // Navigation to different mainview panes
+        // Tell the underscore template if we are loggedIn (to display/show the "keep me logged in" checkbox)
         $('#mainview').html(_.template($("#mainview_" + (event != undefined ? event.currentTarget.id : 'home')).html(), {'loggedIn': irc.loggedIn}));
 
         $('.mainview-button').bind('click', function(event) {
+            //Using the currentTarget.id to render the appropriate template name, see 
+            //templates.jade for
+            //mainview_home
+            //mainview_connection
+            //mainview_login
+            //mainview_register
             that.render(event);
+            //Go to the appropriate mainview page depending on the button pressed
         });
         
         return this;
     },
 
     connectOnEnter: function(event) {
+        //If we didn't press enter, ignore it
         if (event.keyCode !== 13) {
             return;
         }
         
         //Depending on which page we are, do the appropriate action when enter is pressed
-        
         if ($('#connect-button').length){
             this.connect(event);
         }
@@ -49,10 +57,10 @@ var MainView = Backbone.View.extend({
         }
     },
 
+    //connecting
     connect: function(event) {
         event.preventDefault();
-        $('.error').removeClass('error');
-
+        //get all the values from the form
         var server = $('#connect-server').val(),
         nick = $('#connect-nick').val(),
         port = $('#connect-port').val(),
@@ -64,20 +72,11 @@ var MainView = Backbone.View.extend({
         encoding = $('#connect-encoding').val(),
         keepAlive = false;
 
-        if (!server) {
-            //Add error to the respective control-group
-            $('#connect-server').closest('.control-group').addClass('error');
-        }
-
-        if (!nick) {
-            //Add error to the respective control-group
-            $('#connect-nick').closest('.control-group').addClass('error');
-        }
-
         if (irc.loggedIn && $('#connect-keep-alive').length) {
             keepAlive = $('#connect-keep-alive').is(':checked');
         }
 
+        //No verification, but as long as nick and server exist, it will submit
         if (nick && server) {
             $('form').append(_.template($("#load_image").html()));
             $('#connect-button').addClass('disabled');
@@ -97,7 +96,7 @@ var MainView = Backbone.View.extend({
 
             irc.me = new User(connectInfo);
             irc.me.on('change:nick', irc.appView.renderUserBox); //Useful for nick command
-            irc.socket.emit('connect', connectInfo);
+            irc.socket.emit('connect', connectInfo); //MAJOR COMMAND TO START SERVER SIDE
         }
     },
 
@@ -113,24 +112,22 @@ var MainView = Backbone.View.extend({
         var password = $('#login-password').val();
 
         if (!username) {
-            $('#login-username').closest('.clearfix').addClass('error');
-            $('#login-username').addClass('error');
+            irc.appView.notifyError("Form Error", "Username not specified");
         }
 
         if (!password) {
-            $('#login-password').closest('.clearfix').addClass('error');
-            $('#login-password').addClass('error');
+            irc.appView.notifyError("Form Error", "Password not specified");
         }
 
         if (username && password) {
             $('form').append(_.template($("#load_image").html()));
             $('#login-button').addClass('disabled');
+            irc.socket.emit('login', {
+                username: username,
+                password: password
+            });
         }
 
-        irc.socket.emit('login', {
-            username: username,
-            password: password
-        });
     },
     
     register: function() {
@@ -140,24 +137,21 @@ var MainView = Backbone.View.extend({
         var password = $('#register-password').val();
 
         if (!username) {
-            $('#register-username').closest('.clearfix').addClass('error');
-            $('#register-username').addClass('error');
+            irc.appView.notifyError("Form Error", "Username not specified");
         }
 
         if (!password) {
-            $('#register-password').closest('.clearfix').addClass('error');
-            $('#register-password').addClass('error');
+            irc.appView.notifyError("Form Error", "Password not specified");
         }
 
         if (username && password) {
             $('form').append(_.template($("#load_image").html()));
             $('#register-button').addClass('disabled');
+            irc.socket.emit('register', {
+                username: username,
+                password: password
+            });
         }
-
-        irc.socket.emit('register', {
-            username: username,
-            password: password
-        });
     },
 
     toggle_ssl_options: function(event) {

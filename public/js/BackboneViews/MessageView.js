@@ -6,30 +6,31 @@ var MessageView = Backbone.View.extend({
     },
 
     render: function() {
-        console.log("YEAH!");
-        console.log(this);
-    
+        //When we render a MessageView, get the nickname of the sender
         var nick = this.model.get('sender') || this.model.collection.channel.get('name');
         
         var html;
 
+        //If it is one of the special types, it uses a special template for those
         if (_.include(['join', 'part', 'nick', 'topic', 'quit'], this.model.get('type'))) {
             html = this.setText(this.model.get('type'));
         }
+        //If not handle an #action-message message (/me command)
         else if (this.model.get('text') && this.model.get('text').substr(1, 6) === 'ACTION') {
             html = _.template($('#action-message').html(), {
                 user: nick,
                 content: this.model.get('text').substr(8),
-                timeStamp: moment().format('ddd MMM D YYYY, h:mmA')
+                timeStamp: this.model.get('timeStamp') || moment().format('ddd MMM D YYYY, h:mmA')
             });
             html = this.model.parse(html);
         } 
+        //Or just a regular old #message
         else {
             html = _.template($("#message").html(), {
                 user: nick,
                 type: this.model.get('type'),
                 content: this.model.get('text'),
-                timeStamp: moment().format('ddd MMM D YYYY, h:mmA')
+                timeStamp: this.model.get('timeStamp') || moment().format('ddd MMM D YYYY, h:mmA')
             });
             html = this.model.parse(html);
         }
