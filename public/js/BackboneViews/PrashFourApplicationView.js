@@ -31,6 +31,9 @@ var ChatApplicationView = Backbone.View.extend({
         if (!irc.connected) {
             this.mainview = new MainView();
         } 
+        else {
+            this.channelList = new ChannelListView();
+        }
         
         this.delegateEvents(); //Uses this.events
         

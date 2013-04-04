@@ -256,6 +256,10 @@ $(function() {
             var chatWindow = irc.chatWindows.getByName(data.to.toLowerCase());
             chatWindow.messageList.add(new Message({sender: data.from, text: data.text, type: 'message'}));
         }
+        else {
+             var pmWindow = irc.chatWindows.getByName(data.to.toLowerCase());
+             pmWindow.messageList.add(new Message({sender: data.from, text: data.text, type: 'pm'}));       
+        }
     });
     
     //Bug Fix Issue ACTION (WORKAROUND)
