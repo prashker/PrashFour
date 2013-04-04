@@ -428,6 +428,8 @@ $(function() {
 
     //Login Failure
     irc.socket.on('login_error', function(data) {
+        //Remove the session (doesn't matter if there was one) on a login error
+        localStorage.removeItem('session');
         irc.appView.notifyError("Login Error", data.message);
     });
 
