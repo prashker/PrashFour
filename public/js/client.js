@@ -137,6 +137,7 @@ $(function() {
         irc.me.set('nick', data.message.args[0]);
         
         irc.appView.notifySuccess("Connected", "Welcome " + data.message.args[0]);
+        irc.appView.notifyInfo("Try a command!", "Try joining a channel! Via /join #channel");
     });
 
     //Successfully logged in
