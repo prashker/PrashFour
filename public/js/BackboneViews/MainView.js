@@ -37,7 +37,7 @@ var MainView = Backbone.View.extend({
         return this;
     },
 
-    connectOnEnter: function(event) {
+    connectOnEnter: function(event) {        
         //If we didn't press enter, ignore it
         if (event.keyCode !== 13) {
             return;
@@ -45,21 +45,23 @@ var MainView = Backbone.View.extend({
         
         //Depending on which page we are, do the appropriate action when enter is pressed
         if ($('#connect-button').length){
-            this.connect(event);
+            this.connect();
+            event.preventDefault();
         }
         
         if ($('#login-button').length) {
             this.login();
+            event.preventDefault();
         }
         
         if ($('#register-button').length) {
             this.register();
+            event.preventDefault();
         }
     },
 
     //connecting
-    connect: function(event) {
-        event.preventDefault();
+    connect: function() {
         //get all the values from the form
         var server = $('#connect-server').val(),
         nick = $('#connect-nick').val(),
