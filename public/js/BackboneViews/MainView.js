@@ -105,9 +105,8 @@ var MainView = Backbone.View.extend({
         this.$el.find('.connect-more-options').toggleClass('hide');
     },
 
+    //Login form verification and submission
     login: function() {
-        $('.error').removeClass('error');
-
         var username = $('#login-username').val();
         var password = $('#login-password').val();
 
@@ -130,9 +129,8 @@ var MainView = Backbone.View.extend({
 
     },
     
+    //Register form verification and submission
     register: function() {
-        $('.error').removeClass('error');
-
         var username = $('#register-username').val();
         var password = $('#register-password').val();
 
@@ -154,6 +152,7 @@ var MainView = Backbone.View.extend({
         }
     },
 
+    //When we toggle SSL, change the placeholder default port to 6697
     toggle_ssl_options: function(event) {
         var port = $('#connect-secure').is(':checked') ? 6697 : 6667 ;
         $('#connect-port').attr('placeholder', port);

@@ -1,4 +1,5 @@
 var MessageView = Backbone.View.extend({
+    //Every message wrapped in a .message-box
     className: 'message-box',
     
     initialize: function() {
@@ -43,31 +44,40 @@ var MessageView = Backbone.View.extend({
     setText: function(type) {
         var html = '';
         switch (type) {
+            //if it was a join or part
             case 'join':
             case 'part':
                 html = _.template($("#joinpart-message").html(), {
                     type: type,
                     nick: this.model.get('nick'),
-                    action: type === 'join' ? 'joined' : 'left',
+                    action: (type === 'join' ? 'joined' : 'left'), //populate it with the proper wording of a join/part mesage
                     reason: ''
                 });
                 break;
+                
+            //quit message (usually means someone closed client)
             case 'quit':
                 html = _.template($("#joinpart-message").html(), {
                     type: 'part',
                     nick: this.model.get('nick'),
                     action: 'left',
-                    reason: this.model.get('reason') !== 'undefined' ? '('+this.model.get('reason')+')' : '(leaving)'
+                    reason: (this.model.get('reason') !== 'undefined' ? '(' + this.model.get('reason') + ')' : '(leaving)')
                 });
                 break;
+                
+            //someone changed their nickname
             case 'nick':
                 html = _.template($("#nickchange-message").html(), {
                     oldNick: this.model.get('oldNick'),
                     newNick: this.model.get('newNick')
                 });
                 break;
+                
+            //someone changed topic (or active topic)
             case 'topic':
-                html = _.template($("#topic-message").html(), {nick: this.model.get('nick'), topic: this.model.get('topic')});
+                html = _.template($("#topic-message").html(), {nick: this.model.get('nick'), 
+                    topic: this.model.get('topic')
+                });
                 break;
         }
         return html;
