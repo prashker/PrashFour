@@ -4,6 +4,17 @@
     PF
 */
 
+@font-face {
+    font-family: 'GeometrySoftProBoldN';
+    src: url('../font/Geometry_Soft_Pro-Bold_N-webfont.eot');
+    src: url('../font/Geometry_Soft_Pro-Bold_N-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../font/Geometry_Soft_Pro-Bold_N-webfont.woff') format('woff'),
+         url('../font/Geometry_Soft_Pro-Bold_N-webfont.ttf') format('truetype'),
+         url('../font/Geometry_Soft_Pro-Bold_N-webfont.svg#GeometrySoftProBoldN') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
 /* SCROLLBAR -- Webkit Only? 
 http://stackoverflow.com/questions/7224634/webkit-css-scrollbar-styling
 */
@@ -254,6 +265,8 @@ html {
     padding: 1%;
     border-left: 1px solid #DDDDDD;
     border-right: 1px solid #DDDDDD;
+    font-family: GeometrySoftProBoldN;
+    font-size: 14px;
 }
 
 .chat-message span {
