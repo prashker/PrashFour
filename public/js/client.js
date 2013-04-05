@@ -480,7 +480,7 @@ $(function() {
     irc.socket.on('oldMessages', function(data) {
         var channel = irc.chatWindows.getByName(data.name);
         if (data.messages) {
-            $.each(data.messages.reverse(), function(index, message) {  
+            $.each(data.messages, function(index, message) {  
                 channel.messageList.add(new Message({sender: message.user + ' [Backlog]', 
                     timeStamp: moment(message.date).format('ddd MMM D YYYY, h:mmA'), 
                     text: message.message, 
@@ -521,6 +521,7 @@ $(function() {
                 //If not part the active channel
                 else {
                     irc.socket.emit('part', irc.chatWindows.getActive().get('name'));
+                    irc.chatWindows.getActive().destroy();
                     irc.appView.channelList.channelTabs[0].setActive();
                 }
                 break;
