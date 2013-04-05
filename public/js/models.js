@@ -1,6 +1,7 @@
 var Message = Backbone.Model.extend({
     defaults: {
-        type: 'message'
+        type: 'message',
+        text: ''
     },
 
     initialize: function() {
