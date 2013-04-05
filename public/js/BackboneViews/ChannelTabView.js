@@ -1,19 +1,27 @@
 var ChannelTabView = Backbone.View.extend({
+    //Every channel tag is a li.channel (to conform with bootstraps list format)
     className: 'channel',
     tagName: 'li',
 
+    //When we click one, or the close button, do their events
     events: {
         'click': 'setActive',
-        'click .close-button': 'close'
+        'click .close-button': 'close' //made visible via CSS
     },
 
     initialize: function() {
+        //When a message is added to the messageList, this is responsible for retrieving the information about unread things and potentially updating the view
         this.model.messageList.bind('add', this.updateUnreadCounts, this);
+        
+        //If we close this, switch to another tab
         this.model.bind('destroy', this.switchAndRemove, this);
+        
+        //If this is now active, remove all unread stuff
         this.model.bind('change:active', this.removeUnread, this);
     },
 
     render: function() {
+        //The first render, getting #channel and populating it with the fields
         var self = this;
         var tmpl = _.template($("#channel").html(), {
             name: this.model.get('name'),
@@ -44,14 +52,15 @@ var ChannelTabView = Backbone.View.extend({
     },
 
     removeUnread: function() {
-        if (this.model.get('active') === false) return;
+        if (this.model.get('active') === false) 
+            return;
         this.model.set({unread: 0, unreadHighlights: 0});
         this.updateUnreadCounts();
     },
 
-    close: function(e) {
-        e.stopPropagation();
+    close: function() {
         if (this.model.get('type') === 'channel') {
+            //Notify the server that we will be parting
             irc.socket.emit('part', this.model.get('name'));
         }
         this.model.destroy();
