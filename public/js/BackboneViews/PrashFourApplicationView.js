@@ -81,13 +81,14 @@ var ChatApplicationView = Backbone.View.extend({
 
     // Show number of unread highlights in title
     showUnread: function() {
-        //Some titlebar logic, if we have more than 0 unread messages, update the titlebar
-    
+        //Some titlebar of browser logic, if we have more than 0 unread messages, update the titlebar
         var unreadCount = irc.chatWindows.unreadCount();
-        if (unreadCount > 0)
+        if (unreadCount > 0) {
             document.title = '(' + unreadCount + ') ' + this.originalTitle;
-        else
+        }
+        else {
             document.title = this.originalTitle;
+        }
     },
 
 });

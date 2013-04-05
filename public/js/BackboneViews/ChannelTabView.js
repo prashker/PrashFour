@@ -78,7 +78,7 @@ var ChannelTabView = Backbone.View.extend({
             }
         }
         this.remove();
-        nextTab.click();
+        nextTab.click(); //triggers setActive elsewhere
     }
 
 });
