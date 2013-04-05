@@ -15,3 +15,4 @@ As listed in our package.json (useful for a npm -g install command) - As well as
 * Pines Notify (GPL, LGPL, MPL License): Bubble notification, using Bootstrap and displays various verbose information. 
 * Moment.js (MIT License): Used for a robust time parsing/generating snippets.
 * jQuery ScrollTo (MIT License): Used for automatically scrolling to the newest message everytime a new message is added to the message window.
+* Geometry Soft Pro Font (License: http://www.fontsquirrel.com/license/geometry-soft-pro) Font for Main messages (thought it'd be cool)
