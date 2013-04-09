@@ -21,7 +21,7 @@ window.irc = {
     connected: false,
     loggedIn: false,
     latencyStats: {
-        'lastEmitTime': Date.now(),
+        'lastEmitTime': 0,
         'lastPing': 0,
         'totalPing': 0,
         'numOfPings': 0
@@ -45,7 +45,7 @@ window.irc = {
             ';)' : 'wink.gif',
         }
 
-        text = text.replace(/\b((http:\/\/)|(www\.))[^ ]{5,}/g, function(match) {
+        text = text.replace(/\b((https?:\/\/)|(www\.))[^ ]{5,}/g, function(match) {
             var b = match;
             if (b.indexOf("www") == 0) {
                 b = "http://" + b;
@@ -99,7 +99,6 @@ $(function() {
     //https://groups.google.com/forum/?fromgroups=#!searchin/socket_io/latency/socket_io/66oeLfcq_1I/Hv2D6U0F5qAJ
     //Ping loop, continually ping the server and maintain the data on the client size for the course of the session
     irc.socket.on('latencyPONG', function() {
-    
         irc.latencyStats.lastPing = Date.now() - irc.latencyStats.lastEmitTime;
         irc.latencyStats.totalPing += irc.latencyStats.lastPing;
         irc.latencyStats.numOfPings++;
@@ -137,6 +136,7 @@ $(function() {
         irc.me.set('nick', data.message.args[0]);
         
         irc.appView.notifySuccess("Connected", "Welcome " + data.message.args[0]);
+        irc.appView.notifyInfo("Try a command!", "Try joining a channel! Via /join #channel");
     });
 
     //Successfully logged in
@@ -428,6 +428,8 @@ $(function() {
 
     //Login Failure
     irc.socket.on('login_error', function(data) {
+        //Remove the session (doesn't matter if there was one) on a login error
+        localStorage.removeItem('session');
         irc.appView.notifyError("Login Error", data.message);
     });
 
@@ -478,7 +480,7 @@ $(function() {
     irc.socket.on('oldMessages', function(data) {
         var channel = irc.chatWindows.getByName(data.name);
         if (data.messages) {
-            $.each(data.messages.reverse(), function(index, message) {  
+            $.each(data.messages, function(index, message) {  
                 channel.messageList.add(new Message({sender: message.user + ' [Backlog]', 
                     timeStamp: moment(message.date).format('ddd MMM D YYYY, h:mmA'), 
                     text: message.message, 
@@ -519,6 +521,7 @@ $(function() {
                 //If not part the active channel
                 else {
                     irc.socket.emit('part', irc.chatWindows.getActive().get('name'));
+                    irc.chatWindows.getActive().destroy();
                     irc.appView.channelList.channelTabs[0].setActive();
                 }
                 break;
@@ -578,6 +581,9 @@ $(function() {
             case '/backlog':
                 if (command[1]) {
                     irc.socket.emit('getOldMessages', {channelName: irc.chatWindows.getActive().get('name'), skip:0, amount: command[1]});
+                }
+                else {
+                    irc.socket.emit('getOldMessages', {channelName: irc.chatWindows.getActive().get('name'), skip:0, amount: 10});
                 }
                 break;
                 
