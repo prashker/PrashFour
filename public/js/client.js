@@ -21,7 +21,7 @@ window.irc = {
     connected: false,
     loggedIn: false,
     latencyStats: {
-        'lastEmitTime': Date.now(),
+        'lastEmitTime': 0,
         'lastPing': 0,
         'totalPing': 0,
         'numOfPings': 0
@@ -99,7 +99,6 @@ $(function() {
     //https://groups.google.com/forum/?fromgroups=#!searchin/socket_io/latency/socket_io/66oeLfcq_1I/Hv2D6U0F5qAJ
     //Ping loop, continually ping the server and maintain the data on the client size for the course of the session
     irc.socket.on('latencyPONG', function() {
-    
         irc.latencyStats.lastPing = Date.now() - irc.latencyStats.lastEmitTime;
         irc.latencyStats.totalPing += irc.latencyStats.lastPing;
         irc.latencyStats.numOfPings++;
