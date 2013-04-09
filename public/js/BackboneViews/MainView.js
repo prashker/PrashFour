@@ -37,23 +37,26 @@ var MainView = Backbone.View.extend({
         return this;
     },
 
-    connectOnEnter: function(event) {
+    connectOnEnter: function(event) {        
         //If we didn't press enter, ignore it
         if (event.keyCode !== 13) {
             return;
         }
         
         //Depending on which page we are, do the appropriate action when enter is pressed
-        if ($('#connect-button').length){
-            this.connect(event);
+        if ($('#connect-button').length != 0) {
+            this.connect();
+            event.preventDefault();
         }
         
-        if ($('#login-button').length) {
+        if ($('#login-button').length != 0) {
             this.login();
+            event.preventDefault();
         }
         
-        if ($('#register-button').length) {
+        if ($('#register-button').length != 0) {
             this.register();
+            event.preventDefault();
         }
     },
 
@@ -105,9 +108,8 @@ var MainView = Backbone.View.extend({
         this.$el.find('.connect-more-options').toggleClass('hide');
     },
 
+    //Login form verification and submission
     login: function() {
-        $('.error').removeClass('error');
-
         var username = $('#login-username').val();
         var password = $('#login-password').val();
 
@@ -130,9 +132,8 @@ var MainView = Backbone.View.extend({
 
     },
     
+    //Register form verification and submission
     register: function() {
-        $('.error').removeClass('error');
-
         var username = $('#register-username').val();
         var password = $('#register-password').val();
 
@@ -154,6 +155,7 @@ var MainView = Backbone.View.extend({
         }
     },
 
+    //When we toggle SSL, change the placeholder default port to 6697
     toggle_ssl_options: function(event) {
         var port = $('#connect-secure').is(':checked') ? 6697 : 6667 ;
         $('#connect-port').attr('placeholder', port);
