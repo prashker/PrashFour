@@ -44,24 +44,25 @@ var MainView = Backbone.View.extend({
         }
         
         //Depending on which page we are, do the appropriate action when enter is pressed
-        if ($('#connect-button').length){
+        if ($('#connect-button').length != 0) {
             this.connect();
             event.preventDefault();
         }
         
-        if ($('#login-button').length) {
+        if ($('#login-button').length != 0) {
             this.login();
             event.preventDefault();
         }
         
-        if ($('#register-button').length) {
+        if ($('#register-button').length != 0) {
             this.register();
             event.preventDefault();
         }
     },
 
     //connecting
-    connect: function() {
+    connect: function(event) {
+        event.preventDefault();
         //get all the values from the form
         var server = $('#connect-server').val(),
         nick = $('#connect-nick').val(),

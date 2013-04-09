@@ -45,7 +45,7 @@ window.irc = {
             ';)' : 'wink.gif',
         }
 
-        text = text.replace(/\b((http:\/\/)|(www\.))[^ ]{5,}/g, function(match) {
+        text = text.replace(/\b((https?:\/\/)|(www\.))[^ ]{5,}/g, function(match) {
             var b = match;
             if (b.indexOf("www") == 0) {
                 b = "http://" + b;
