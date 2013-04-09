@@ -16,6 +16,7 @@ script(id="main", type="text/x-underscore-template")
                 button.btn.btn-success /me        
                 button.btn.btn-success /whois
                 button.btn.btn-info /ping
+                buttin.btn.btn-info /list
                 button.btn.btn-info /backlog
                 button.btn.btn-info /clear
     .wrapper
@@ -25,7 +26,7 @@ script(id="load_image", type="text/x-underscore-template")
     i.icon-spinner.icon-spin.icon-3x
 
 script(id="mainview_home", type="text/x-underscore-template")
-    ul
+    ul.unstyled
         li.mainview-button#connection
             i.icon-off
             span New Connection
@@ -46,12 +47,12 @@ script(id="mainview_connection", type="text/x-underscore-template")
             .input-prepend
                 span.add-on
                     i.icon-user
-                input#connect-nick(type="text", placeholder="Nick")
+                input#connect-nick(type="text", placeholder="Nick (ex: Anil)")
         .control-group
             .input-prepend
                 span.add-on
                     i.icon-sitemap
-                input#connect-server(type="text", placeholder="Server")
+                input#connect-server(type="text", placeholder="Server (ex: irc.arcti.ca)")
         .control-group
             .input-prepend
                 span.add-on
@@ -136,9 +137,10 @@ script(id="chat", type="x-underscore-template")
         #chat-window
             #chat-bar.absolute
             #chat-contents.absolute
-            #input-container.absolute
-                input#chat-input(autocomplete="off")
+            #input-wrapper.absolute
                 button#chat-button.btn.btn-primary Send
+                #inputbox
+                    input#chat-input(autocomplete="off") //- per the requirements of bootstrap typeahead
         #user-list-window
             #user-bar.absolute
                 .titlebar
