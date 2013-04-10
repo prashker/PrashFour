@@ -6,6 +6,7 @@
 //= require 'libs/bootstrap.min.js'
 //= require 'libs/moment.min.js'
 //= require 'libs/jquery.pnotify.min.js
+//= require 'libs/konami.js'
 //= require 'models.js'
 //= require 'collections.js'
 //= require 'router.js'
@@ -596,6 +597,15 @@ $(function() {
                 break;
         }
     }
+    
+    //EASTER
+    var konami = new Konami(function() {
+        $.pnotify({
+            title: 'Thank you for using our PrashFour :)',
+            text: '<a href="/images/uh.jpg"><img src="/images/uh.jpg"></img></a>',
+            width: '800px'
+        });
+    });
 
 });
 
