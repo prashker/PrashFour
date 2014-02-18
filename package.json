@@ -8,7 +8,7 @@
 		"mongoose": "",
 		"socket.io": "",
 		"connect-assets": "",
-		"jade": "",
+		"jade": "0.32",
 		"irc": "",
 		"password-hash": ""
 	}
